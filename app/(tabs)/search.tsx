@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -81,32 +81,38 @@ export default function SearchScreen() {
         <CategoryChips selected={category} onSelect={setCategory} />
       </View>
 
-      {/* Results area — simple ScrollView via FlatList pattern, using View grid */}
-      <MotiView
-        key={`${query}-${category}`}
-        from={{ opacity: 0, translateY: 8 }}
-        animate={{ opacity: 1, translateY: 0 }}
-        transition={{ type: "timing", duration: 280 }}
+      {/* Results area — scrollable, SearchBar + chips remain fixed above */}
+      <ScrollView
         style={styles.resultsArea}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.resultsContent}
       >
-        {showEmpty ? (
-          <View style={styles.emptyState}>
-            <Ionicons name="search-outline" size={44} color={tokens.colors.muted} />
-            <Text style={styles.emptyTitle}>
-              {query
-                ? `No results for "${query}"`
-                : `Nothing in ${category}`}
-            </Text>
-            <Text style={styles.emptySubtitle}>
-              {query
-                ? "Try a different search or browse by category."
-                : "Pick another category to keep browsing."}
-            </Text>
-          </View>
-        ) : (
-          <Grid products={results} />
-        )}
-      </MotiView>
+        <MotiView
+          key={`${query}-${category}`}
+          from={{ opacity: 0, translateY: 8 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: "timing", duration: 280 }}
+        >
+          {showEmpty ? (
+            <View style={styles.emptyState}>
+              <Ionicons name="search-outline" size={44} color={tokens.colors.muted} />
+              <Text style={styles.emptyTitle}>
+                {query
+                  ? `No results for "${query}"`
+                  : `Nothing in ${category}`}
+              </Text>
+              <Text style={styles.emptySubtitle}>
+                {query
+                  ? "Try a different search or browse by category."
+                  : "Pick another category to keep browsing."}
+              </Text>
+            </View>
+          ) : (
+            <Grid products={results} />
+          )}
+        </MotiView>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -137,10 +143,12 @@ const styles = StyleSheet.create({
   resultsArea: {
     flex: 1,
   },
+  resultsContent: {
+    paddingBottom: tokens.space.xxxl * 2, // 64 — clears the bottom tab bar
+  },
   grid: {
     paddingHorizontal: tokens.space.xl,
     gap: tokens.space.md,
-    paddingBottom: tokens.space.xxxl,
   },
   gridRow: {
     flexDirection: "row",
