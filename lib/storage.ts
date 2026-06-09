@@ -32,3 +32,27 @@ export function recordIntercept(
 }
 
 export { INITIAL_STATE };
+
+export const STORAGE_KEY = "nada_state_v1";
+
+export function loadState(): NadaState {
+  if (typeof window === "undefined") return INITIAL_STATE;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return INITIAL_STATE;
+    const parsed = JSON.parse(raw);
+    return { ...INITIAL_STATE, ...parsed };
+  } catch {
+    return INITIAL_STATE;
+  }
+}
+
+export function saveState(state: NadaState): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+export function resetState(): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(STORAGE_KEY);
+}
