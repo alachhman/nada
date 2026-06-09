@@ -9,6 +9,7 @@ import { useNada } from "@/components/providers/NadaProvider";
 import { HeroStat } from "@/components/you/HeroStat";
 import { StatPills } from "@/components/you/StatPills";
 import { SavesFeed } from "@/components/you/SavesFeed";
+import { ReclaimedBlock } from "@/components/you/ReclaimedBlock";
 
 const STAGGER = 80;
 
@@ -51,6 +52,13 @@ export default function YouScreen() {
           <StatPills streak={state.streak} interceptCount={state.interceptCount} />
         </Reveal>
 
+        {/* Reclaimed block */}
+        <Reveal delay={nextDelay()}>
+          <View style={styles.reclaimedSection}>
+            <ReclaimedBlock />
+          </View>
+        </Reveal>
+
         {/* Rituals section */}
         <Reveal delay={nextDelay()}>
           <View style={styles.ritualsSection}>
@@ -65,9 +73,8 @@ export default function YouScreen() {
             </Text>
             <View style={styles.ritualsGrid}>
               <FoodRitualCard ritual={RITUALS[0]} />
-              {RITUALS.slice(1).map((ritual) => (
-                <RitualCard key={ritual.title} ritual={ritual} />
-              ))}
+              <DoomscrollRitualCard ritual={RITUALS[1]} />
+              <RitualCard ritual={RITUALS[2]} />
             </View>
           </View>
         </Reveal>
@@ -125,6 +132,34 @@ function FoodRitualCard({ ritual }: { ritual: RitualCard }) {
   );
 }
 
+function DoomscrollRitualCard({ ritual }: { ritual: RitualCard }) {
+  const handlePress = () => {
+    if (Platform.OS !== "web") void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.push("/scroll");
+  };
+
+  return (
+    <Pressable
+      onPress={handlePress}
+      accessibilityRole="button"
+      accessibilityLabel="Open Doomscroll ritual"
+      style={({ pressed }) => [
+        styles.ritualCard,
+        { backgroundColor: ritual.tint + "88" },
+        pressed && { opacity: 0.75 },
+      ]}
+    >
+      <View style={[styles.ritualIconBg, { backgroundColor: ritual.tint }]}>
+        <Ionicons name={ritual.icon} size={20} color={tokens.colors.ink} />
+      </View>
+      <Text style={styles.ritualTitle} numberOfLines={1}>
+        {ritual.title}
+      </Text>
+      <Text style={styles.ritualCta}>Try it →</Text>
+    </Pressable>
+  );
+}
+
 function RitualCard({ ritual }: { ritual: RitualCard }) {
   return (
     <View style={[styles.ritualCard, { backgroundColor: ritual.tint + "55" }]}>
@@ -148,6 +183,12 @@ const styles = StyleSheet.create({
   },
   scroll: {
     paddingBottom: tokens.space.xxxl + tokens.space.xl,
+  },
+
+  /* Reclaimed block */
+  reclaimedSection: {
+    paddingHorizontal: tokens.space.xl,
+    marginTop: tokens.space.xxl,
   },
 
   /* Rituals section */
