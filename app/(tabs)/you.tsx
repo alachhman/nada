@@ -3,6 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { MotiView } from "moti";
+import { router } from "expo-router";
 import { tokens } from "@/lib/theme";
 import { useNada } from "@/components/providers/NadaProvider";
 import { HeroStat } from "@/components/you/HeroStat";
@@ -63,7 +64,8 @@ export default function YouScreen() {
               Replace habits, not just purchases.
             </Text>
             <View style={styles.ritualsGrid}>
-              {RITUALS.map((ritual) => (
+              <FoodRitualCard ritual={RITUALS[0]} />
+              {RITUALS.slice(1).map((ritual) => (
                 <RitualCard key={ritual.title} ritual={ritual} />
               ))}
             </View>
@@ -104,6 +106,34 @@ function Reveal({ delay, children }: { delay: number; children: React.ReactNode 
     >
       {children}
     </MotiView>
+  );
+}
+
+function FoodRitualCard({ ritual }: { ritual: RitualCard }) {
+  const handlePress = () => {
+    if (Platform.OS !== "web") void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.push("/food");
+  };
+
+  return (
+    <Pressable
+      onPress={handlePress}
+      accessibilityRole="button"
+      accessibilityLabel="Open Food delivery ritual"
+      style={({ pressed }) => [
+        styles.ritualCard,
+        { backgroundColor: ritual.tint + "88" },
+        pressed && { opacity: 0.75 },
+      ]}
+    >
+      <View style={[styles.ritualIconBg, { backgroundColor: ritual.tint }]}>
+        <Ionicons name={ritual.icon} size={20} color={tokens.colors.ink} />
+      </View>
+      <Text style={styles.ritualTitle} numberOfLines={1}>
+        {ritual.title}
+      </Text>
+      <Text style={styles.ritualCta}>Try it →</Text>
+    </Pressable>
   );
 }
 
@@ -194,6 +224,13 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: tokens.colors.ink,
     textAlign: "center",
+  },
+  ritualCta: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: tokens.colors.ink,
+    letterSpacing: 0.2,
+    opacity: 0.65,
   },
   ritualLock: {
     position: "absolute",
