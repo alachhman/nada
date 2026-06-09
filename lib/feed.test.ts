@@ -85,6 +85,15 @@ describe("generateFeed", () => {
     }
   });
 
+  it("places nada at correct global positions for a non-zero-start batch", () => {
+    const batch = generateFeed(20, 16);
+    batch.forEach((item, i) => {
+      const g = 20 + i;
+      if (g % 8 === 7) expect(item.kind).toBe("nada");
+      else expect(item.kind).not.toBe("nada");
+    });
+  });
+
   it("two consecutive social cards in a batch of 20 are not identical text", () => {
     const batch = generateFeed(0, 20);
     const social = batch.filter(

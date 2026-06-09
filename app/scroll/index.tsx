@@ -10,6 +10,11 @@ import { generateFeed, type FeedItem } from "@/lib/feed";
 import { tokens } from "@/lib/theme";
 import { useScroll } from "@/components/providers/ScrollProvider";
 
+const SEPARATOR_STYLE = { height: tokens.space.lg };
+function Separator() {
+  return <View style={SEPARATOR_STYLE} />;
+}
+
 export default function ScrollScreen() {
   const router = useRouter();
   const { addReclaimed } = useScroll();
@@ -56,14 +61,14 @@ export default function ScrollScreen() {
     }
   };
 
+  useEffect(() => {
+    loadingRef.current = false;
+  }, [items]);
+
   const loadMore = () => {
     if (loadingRef.current) return;
     loadingRef.current = true;
-    setItems((prev) => {
-      const next = [...prev, ...generateFeed(prev.length, 12)];
-      return next;
-    });
-    loadingRef.current = false;
+    setItems((prev) => [...prev, ...generateFeed(prev.length, 12)]);
   };
 
   return (
@@ -94,7 +99,7 @@ export default function ScrollScreen() {
         }
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        ItemSeparatorComponent={Separator}
         onEndReached={loadMore}
         onEndReachedThreshold={0.6}
       />

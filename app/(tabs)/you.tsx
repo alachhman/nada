@@ -64,9 +64,6 @@ export default function YouScreen() {
           <View style={styles.ritualsSection}>
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>Rituals</Text>
-              <View style={styles.soonBadge}>
-                <Text style={styles.soonBadgeText}>Soon</Text>
-              </View>
             </View>
             <Text style={styles.sectionSubtitle}>
               Replace habits, not just purchases.
