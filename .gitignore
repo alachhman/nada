@@ -1,0 +1,31 @@
+# Brainstorming companion (mockups, local server state)
+.superpowers/
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js
+/.next/
+/out/
+/build
+next-env.d.ts
+
+# Production
+/dist
+
+# Env
+.env*.local
+.env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Misc
+.DS_Store
+*.pem
+.vercel
+*.tsbuildinfo
