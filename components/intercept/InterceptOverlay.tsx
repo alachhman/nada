@@ -45,7 +45,7 @@ export function InterceptOverlay({
             You saved {usd(amount)}
           </div>
           <p className="text-sm mt-3" style={{ color: "var(--muted)" }}>
-            You got the hunt, the pick, the click — and kept the money. That's the whole trick.
+            You got the hunt, the pick, the click — and kept the money. That’s the whole trick.
           </p>
           <button
             onClick={onClose}

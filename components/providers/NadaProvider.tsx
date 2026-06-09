@@ -19,6 +19,7 @@ export function NadaProvider({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setState(loadState());
     setHydrated(true);
   }, []);

@@ -5,7 +5,7 @@ export function SavesFeed({ saves }: { saves: SaveEntry[] }) {
   if (saves.length === 0) {
     return (
       <div className="text-center text-sm py-8" style={{ color: "var(--muted)" }}>
-        No saves yet. Go fill a cart you'll never check out.
+        No saves yet. Go fill a cart you’ll never check out.
       </div>
     );
   }
