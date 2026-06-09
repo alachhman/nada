@@ -28,7 +28,9 @@ preview** (`npm run web`). Running on the iOS Simulator or TestFlight requires f
 - `components/providers/` — Cart + Nada (savings) React contexts, AsyncStorage-persisted
 - `components/intercept/InterceptOverlay.tsx` — the signature "magic moment": processing theater → spring + confetti/glow reveal of "You saved $X"
 - Tabs: **Shop** (marketplace) · **Search** · **Cart** (hosts the intercept) · **You** (savings hub)
-- Other rituals (food delivery, doomscroll, smoke break) are intentional "coming soon" teasers.
+- **Food delivery ritual** (launched from the You tab): `lib/food.ts` (restaurants + menus), `app/food/` (browse → menu → order → courier tracking), `components/food/CourierMap.tsx` (stylized SVG route + animated courier marker), `lib/courier.ts` (status beats), `components/food/CelebrationReveal.tsx`. Food orders run through the same `intercept` and log to the same You stats.
+- `components/ui/Reveal.tsx` — web-reliable entrance primitive (Reanimated `useEffect`-driven) used app-wide for mount/stagger animations.
+- Remaining rituals (doomscroll, smoke break) are intentional "coming soon" teasers.
 
 ## Design
 Warm cream/espresso palette with soft pastel accents and award-calibre motion — see
