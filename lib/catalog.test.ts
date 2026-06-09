@@ -19,4 +19,8 @@ describe("catalog", () => {
     expect(getProduct(CATALOG[0].id)?.id).toBe(CATALOG[0].id);
     expect(getProduct("nope")).toBeUndefined();
   });
+  it("every product has a unique image URL", () => {
+    const images = new Set(CATALOG.map((p) => p.image));
+    expect(images.size).toBe(CATALOG.length);
+  });
 });

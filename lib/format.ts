@@ -17,6 +17,7 @@ export function isoDay(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
+/** True if two YYYY-MM-DD date strings are the same day. */
 export function isSameDay(a: string, b: string): boolean {
   return a === b;
 }

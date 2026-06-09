@@ -17,6 +17,7 @@ export function recordIntercept(
   state: NadaState,
   cart: CartItem[],
   today: string,
+  nowMs: number = Date.now(),
 ): NadaState {
   const amount = cartTotal(cart);
   return {
@@ -25,7 +26,7 @@ export function recordIntercept(
     streak: nextStreak(state, today),
     lastActiveDate: today,
     saves: [
-      { items: cart.map((c) => c.name), amount, timestamp: Date.now() },
+      { items: cart.map((c) => c.name), amount, timestamp: nowMs },
       ...state.saves,
     ].slice(0, 50),
   };

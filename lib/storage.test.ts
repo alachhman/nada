@@ -64,4 +64,9 @@ describe("recordIntercept", () => {
     expect(state.saves).toHaveLength(50);
     expect(state.saves[0].amount).toBe(203);
   });
+
+  it("uses the injected timestamp for the save entry", () => {
+    const next = recordIntercept(INITIAL_STATE, cart, "2026-06-08", 1234567890);
+    expect(next.saves[0].timestamp).toBe(1234567890);
+  });
 });
