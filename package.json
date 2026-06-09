@@ -14,6 +14,7 @@
     "expo-linking": "~56.0.13",
     "expo-router": "~56.2.9",
     "expo-status-bar": "~56.0.4",
+    "expo-updates": "~56.0.18",
     "moti": "^0.30.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -39,7 +40,9 @@
     "typecheck": "tsc --noEmit",
     "build:ios:preview": "eas build --platform ios --profile preview",
     "build:ios": "eas build --platform ios --profile production",
-    "submit:ios": "eas submit --platform ios --profile production"
+    "submit:ios": "eas submit --platform ios --profile production",
+    "update:preview": "eas update --branch preview",
+    "update:production": "eas update --branch production"
   },
   "private": true
 }
