@@ -25,6 +25,7 @@ export function RitualCards() {
           key={r.title}
           className="rounded-2xl p-5 flex flex-col justify-between min-h-[120px] relative"
           style={{ background: "var(--surface)", border: "1px solid var(--border)", opacity: 0.7 }}
+          aria-label={`${r.title} — coming soon`}
         >
           <div className="text-2xl">{r.emoji}</div>
           <div>

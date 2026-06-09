@@ -11,9 +11,9 @@ export function SavesFeed({ saves }: { saves: SaveEntry[] }) {
   }
   return (
     <div className="space-y-2">
-      {saves.map((s, i) => (
+      {saves.map((s) => (
         <div
-          key={i}
+          key={s.timestamp}
           className="flex items-center justify-between rounded-xl px-4 py-3"
           style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
         >

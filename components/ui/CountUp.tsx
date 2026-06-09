@@ -8,6 +8,7 @@ export function CountUp({ value, durationMs = 900 }: { value: number; durationMs
 
   useEffect(() => {
     let raf = 0;
+    setDisplay(0);
     const start = performance.now();
     const tick = (now: number) => {
       const t = Math.min(1, (now - start) / durationMs);

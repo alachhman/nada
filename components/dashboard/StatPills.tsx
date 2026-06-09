@@ -5,7 +5,7 @@ export function StatPills({ streak, interceptCount }: { streak: number; intercep
     <div className="flex gap-3">
       <div className={pill} style={style}>
         <div className="text-xs" style={{ color: "var(--muted)" }}>Streak</div>
-        <div className="text-2xl font-bold">{streak} {streak > 0 ? "🔥" : ""}</div>
+        <div className="text-2xl font-bold">{streak}{streak > 0 ? " 🔥" : ""}</div>
       </div>
       <div className={pill} style={style}>
         <div className="text-xs" style={{ color: "var(--muted)" }}>Cravings handled</div>

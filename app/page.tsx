@@ -8,12 +8,12 @@ import { SavesFeed } from "@/components/dashboard/SavesFeed";
 import { RitualCards } from "@/components/dashboard/RitualCards";
 
 export default function Dashboard() {
-  const { state, hydrated } = useNada();
+  const { state } = useNada();
   return (
     <main className="min-h-screen">
       <AppHeader />
       <div className="max-w-2xl mx-auto px-5 pb-16">
-        <HeroStat totalSaved={hydrated ? state.totalSaved : 0} />
+        <HeroStat totalSaved={state.totalSaved} />
         <StatPills streak={state.streak} interceptCount={state.interceptCount} />
         <div className="mt-8">
           <div className="text-xs uppercase tracking-[0.15em] mb-3" style={{ color: "var(--muted)" }}>
