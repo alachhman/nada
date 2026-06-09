@@ -31,9 +31,12 @@ export default function ShopScreen() {
     return { trending, underFifty, forYou };
   }, []);
 
-  // Category routing will pass a filter param once the Search screen lands.
-  const goToSearch = (_category?: Category) => {
-    router.push("/(tabs)/search");
+  const goToSearch = (category?: Category) => {
+    if (category && category !== "All") {
+      router.push({ pathname: "/(tabs)/search", params: { category } });
+    } else {
+      router.push("/(tabs)/search");
+    }
   };
 
   const onCategory = (category: Category) => {
