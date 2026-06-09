@@ -1,14 +1,16 @@
 {
   "expo": {
-    "name": "nada-ios",
-    "slug": "nada-ios",
+    "name": "nada",
+    "slug": "nada",
     "scheme": "nada",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nada.shop",
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
