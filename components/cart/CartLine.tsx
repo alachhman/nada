@@ -21,7 +21,7 @@ export function CartLine({ item }: { item: CartItem }) {
         <span className="w-5 text-center text-sm">{item.qty}</span>
         <button onClick={() => setQty(item.id, item.qty + 1)} className="h-7 w-7 rounded-full border" style={{ borderColor: "var(--border)" }}>+</button>
       </div>
-      <button onClick={() => remove(item.id)} className="text-xs ml-1" style={{ color: "var(--muted)" }}>Remove</button>
+      <button onClick={() => remove(item.id)} aria-label={`Remove ${item.name}`} className="text-xs ml-1" style={{ color: "var(--muted)" }}>Remove</button>
     </div>
   );
 }

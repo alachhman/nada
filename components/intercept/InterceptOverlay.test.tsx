@@ -14,5 +14,6 @@ describe("InterceptOverlay", () => {
 
     expect(screen.getByText(/\$203/)).toBeInTheDocument();
     expect(screen.getByText(/craving handled/i)).toBeInTheDocument();
+    expect(screen.queryByText(/placing your order/i)).not.toBeInTheDocument();
   });
 });
