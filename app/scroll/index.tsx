@@ -5,16 +5,24 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { FeedCard } from "@/components/scroll/FeedCard";
 import { NadaInterstitial } from "@/components/scroll/NadaInterstitial";
+import { ReclaimSummary } from "@/components/scroll/ReclaimSummary";
 import { generateFeed, type FeedItem } from "@/lib/feed";
 import { tokens } from "@/lib/theme";
+import { useScroll } from "@/components/providers/ScrollProvider";
 
 export default function ScrollScreen() {
   const router = useRouter();
+  const { addReclaimed } = useScroll();
+
   const [items, setItems] = useState<FeedItem[]>(() => generateFeed(0, 18));
   const loadingRef = useRef(false);
 
   const startRef = useRef(Date.now());
   const [sessionSeconds, setSessionSeconds] = useState(0);
+
+  // Null = summary not shown; number = elapsed seconds to show in summary.
+  const [summary, setSummary] = useState<number | null>(null);
+  const committedRef = useRef(false);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -22,6 +30,31 @@ export default function ScrollScreen() {
     }, 1000);
     return () => clearInterval(id);
   }, []);
+
+  // Best-effort commit on unmount if the user leaves without the close button.
+  useEffect(() => {
+    return () => {
+      if (!committedRef.current) {
+        const elapsed = Math.round((Date.now() - startRef.current) / 1000);
+        if (elapsed >= 2) addReclaimed(elapsed);
+        committedRef.current = true;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const commitAndSummarize = () => {
+    const elapsed = Math.round((Date.now() - startRef.current) / 1000);
+    if (committedRef.current) return;
+    committedRef.current = true;
+    if (elapsed >= 2) {
+      addReclaimed(elapsed);
+      setSummary(elapsed);
+    } else {
+      // Nothing meaningful to log — just navigate back.
+      if (router.canGoBack()) router.back();
+    }
+  };
 
   const loadMore = () => {
     if (loadingRef.current) return;
@@ -33,15 +66,11 @@ export default function ScrollScreen() {
     loadingRef.current = false;
   };
 
-  const onClose = () => {
-    if (router.canGoBack()) router.back();
-  };
-
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <View style={styles.topBar}>
         <Pressable
-          onPress={onClose}
+          onPress={commitAndSummarize}
           style={styles.closeButton}
           accessibilityRole="button"
           accessibilityLabel="Close feed"
@@ -69,6 +98,13 @@ export default function ScrollScreen() {
         onEndReached={loadMore}
         onEndReachedThreshold={0.6}
       />
+
+      {summary !== null ? (
+        <ReclaimSummary
+          seconds={summary}
+          onClose={() => router.replace("/(tabs)/you")}
+        />
+      ) : null}
     </SafeAreaView>
   );
 }

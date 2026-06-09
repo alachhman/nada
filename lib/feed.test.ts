@@ -84,4 +84,15 @@ describe("generateFeed", () => {
       expect(typeof item.comments).toBe("number");
     }
   });
+
+  it("two consecutive social cards in a batch of 20 are not identical text", () => {
+    const batch = generateFeed(0, 20);
+    const social = batch.filter(
+      (i): i is FeedItem & { kind: "social" } => i.kind === "social",
+    );
+    // Collect adjacent pairs
+    for (let i = 0; i < social.length - 1; i++) {
+      expect(social[i].text).not.toBe(social[i + 1].text);
+    }
+  });
 });

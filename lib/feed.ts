@@ -219,27 +219,41 @@ const KIND_ORDER = [
 
 type PoolKind = (typeof KIND_ORDER)[number];
 
-function getPoolItem(kind: PoolKind, globalIndex: number): Omit<FeedItem, "kind" | "id"> {
+const L = KIND_ORDER.length;
+
+/**
+ * Compute how many times kind K has appeared before global index g
+ * (i.e. its "occurrence index"), so that each kind draws distinct pool items.
+ */
+function occurrenceIndex(kind: PoolKind, g: number): number {
+  const fullCycles = Math.floor(g / L);
+  const rem = g % L;
+  const perCycle = KIND_ORDER.filter((k) => k === kind).length;
+  const remCount = KIND_ORDER.slice(0, rem).filter((k) => k === kind).length;
+  return fullCycles * perCycle + remCount;
+}
+
+function getPoolItem(kind: PoolKind, occurrence: number): Omit<FeedItem, "kind" | "id"> {
   switch (kind) {
     case "social": {
-      const p = SOCIAL_POOL[globalIndex % SOCIAL_POOL.length];
-      const avatarColor = AVATAR_COLORS[globalIndex % AVATAR_COLORS.length];
+      const p = SOCIAL_POOL[occurrence % SOCIAL_POOL.length];
+      const avatarColor = AVATAR_COLORS[occurrence % AVATAR_COLORS.length];
       return { ...p, avatarColor };
     }
     case "affirmation": {
-      const p = AFFIRMATION_POOL[globalIndex % AFFIRMATION_POOL.length];
+      const p = AFFIRMATION_POOL[occurrence % AFFIRMATION_POOL.length];
       return { text: p.text };
     }
     case "tinywin": {
-      const p = TINYWIN_POOL[globalIndex % TINYWIN_POOL.length];
+      const p = TINYWIN_POOL[occurrence % TINYWIN_POOL.length];
       return { text: p.text };
     }
     case "news": {
-      const p = NEWS_POOL[globalIndex % NEWS_POOL.length];
+      const p = NEWS_POOL[occurrence % NEWS_POOL.length];
       return { headline: p.headline, source: p.source };
     }
     case "calm": {
-      const p = CALM_POOL[globalIndex % CALM_POOL.length];
+      const p = CALM_POOL[occurrence % CALM_POOL.length];
       return { image: p.image, caption: p.caption };
     }
   }
@@ -249,27 +263,25 @@ function getPoolItem(kind: PoolKind, globalIndex: number): Omit<FeedItem, "kind"
  * Generate exactly `count` feed items starting at `startIndex`.
  * - IDs are stable: `item-${startIndex + i}` so consecutive batches never collide.
  * - Every 8th item (globalIndex % 8 === 7) is a `nada` interstitial.
- * - Otherwise, kind cycles through KIND_ORDER using the global index.
+ * - Otherwise, kind cycles through KIND_ORDER; pool items are chosen by
+ *   per-kind occurrence count so the same kind never repeats content within
+ *   a cycle (e.g. two "social" slots in one cycle get different posts).
  */
 export function generateFeed(startIndex: number, count: number): FeedItem[] {
   const items: FeedItem[] = [];
 
   for (let i = 0; i < count; i++) {
-    const globalIndex = startIndex + i;
-    const id = `item-${globalIndex}`;
+    const g = startIndex + i;
+    const id = `item-${g}`;
 
-    if (globalIndex % 8 === 7) {
+    if (g % 8 === 7) {
       items.push({ kind: "nada", id });
       continue;
     }
 
-    // Map globalIndex (excluding nada slots) to a kind
-    // We use the raw globalIndex to drive both kind selection and pool index
-    // so everything stays deterministic.
-    const kindIndex = globalIndex % KIND_ORDER.length;
-    const kind = KIND_ORDER[kindIndex];
-    const poolIndex = Math.floor(globalIndex / KIND_ORDER.length);
-    const poolData = getPoolItem(kind, poolIndex);
+    const kind = KIND_ORDER[g % L];
+    const occurrence = occurrenceIndex(kind, g);
+    const poolData = getPoolItem(kind, occurrence);
 
     items.push({ kind, id, ...poolData } as FeedItem);
   }
