@@ -1,11 +1,15 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useCart } from '@/components/providers/CartProvider';
 
 const CREAM = '#F7F4EE';
 const INK = '#2C2A26';
 const MUTED = '#9E9A93';
 
 export default function TabsLayout() {
+  const { items } = useCart();
+  const count = items.reduce((s, i) => s + i.qty, 0);
+
   return (
     <Tabs
       screenOptions={{
@@ -13,6 +17,7 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: CREAM,
           borderTopColor: '#E8E4DC',
+          borderTopWidth: 1,
         },
         tabBarActiveTintColor: INK,
         tabBarInactiveTintColor: MUTED,
@@ -43,6 +48,7 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="bag-outline" size={size} color={color} />
           ),
+          tabBarBadge: count > 0 ? count : undefined,
         }}
       />
       <Tabs.Screen
