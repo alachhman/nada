@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { CartItem, Product } from "@/lib/types";
 
 const KEY = "nada_cart_v1";
@@ -18,6 +18,9 @@ const Ctx = createContext<CartCtx | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  // Skip the very first save-effect run (mount, items=[]) so we never clobber
+  // persisted state before the load-effect has populated it.
+  const skipNextSave = useRef(true);
 
   useEffect(() => {
     try {
@@ -29,6 +32,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (skipNextSave.current) {
+      skipNextSave.current = false;
+      return;
+    }
     localStorage.setItem(KEY, JSON.stringify(items));
   }, [items]);
 

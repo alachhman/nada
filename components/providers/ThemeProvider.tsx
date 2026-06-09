@@ -3,10 +3,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
-const ThemeContext = createContext<{ theme: Theme; toggle: () => void }>({
-  theme: "light",
-  toggle: () => {},
-});
+type ThemeCtx = { theme: Theme; toggle: () => void };
+const ThemeContext = createContext<ThemeCtx | null>(null);
 
 const KEY = "nada_theme";
 
@@ -14,7 +12,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
-    const stored = (localStorage.getItem(KEY) as Theme | null) ?? "light";
+    const raw = localStorage.getItem(KEY);
+    const stored: Theme = raw === "dark" ? "dark" : "light";
     setTheme(stored);
     document.documentElement.dataset.theme = stored;
   }, []);
@@ -35,4 +34,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const useTheme = () => useContext(ThemeContext);
+export function useTheme(): ThemeCtx {
+  const ctx = useContext(ThemeContext);
+  if (!ctx) throw new Error("useTheme must be used within ThemeProvider");
+  return ctx;
+}

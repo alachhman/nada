@@ -9,13 +9,14 @@ const product: Product = {
 };
 
 function Probe() {
-  const { items, total, add, remove, clear } = useCart();
+  const { items, total, add, remove, setQty, clear } = useCart();
   return (
     <div>
       <span data-testid="count">{items.length}</span>
       <span data-testid="total">{total}</span>
       <button onClick={() => add(product)}>add</button>
       <button onClick={() => remove("x")}>remove</button>
+      <button onClick={() => setQty("x", 0)}>setZero</button>
       <button onClick={clear}>clear</button>
     </div>
   );
@@ -49,5 +50,20 @@ describe("CartProvider", () => {
     act(() => screen.getByText("add").click());
     act(() => screen.getByText("remove").click());
     expect(screen.getByTestId("count").textContent).toBe("0");
+  });
+
+  it("setQty to 0 removes the item", () => {
+    setup();
+    act(() => screen.getByText("add").click());
+    act(() => screen.getByText("setZero").click());
+    expect(screen.getByTestId("count").textContent).toBe("0");
+  });
+
+  it("persists items across remount", () => {
+    const first = setup();
+    act(() => screen.getByText("add").click());
+    first.unmount();
+    setup();
+    expect(screen.getByTestId("count").textContent).toBe("1");
   });
 });

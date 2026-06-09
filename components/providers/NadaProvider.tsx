@@ -8,7 +8,7 @@ import { isoDay } from "@/lib/format";
 interface NadaCtx {
   state: NadaState;
   hydrated: boolean;
-  intercept: (cart: CartItem[]) => number; // returns amount saved
+  intercept: (cart: CartItem[]) => number; // returns amount saved (synchronous)
   reset: () => void;
 }
 
@@ -23,12 +23,17 @@ export function NadaProvider({ children }: { children: React.ReactNode }) {
     setHydrated(true);
   }, []);
 
+  // Persist whenever state changes, but only after hydration so we don't
+  // overwrite stored state with INITIAL_STATE on first mount.
+  useEffect(() => {
+    if (hydrated) saveState(state);
+  }, [state, hydrated]);
+
   const intercept = (cart: CartItem[]) => {
     const today = isoDay(new Date());
-    const next = recordIntercept(state, cart, today);
-    setState(next);
-    saveState(next);
-    return next.totalSaved - state.totalSaved;
+    const amount = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    setState((prev) => recordIntercept(prev, cart, today));
+    return amount;
   };
 
   const reset = () => {
