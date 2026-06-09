@@ -4,7 +4,7 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
-import { MotiView } from "moti";
+import { Reveal } from "@/components/ui/Reveal";
 import { tokens } from "@/lib/theme";
 import { usd } from "@/lib/format";
 import { getRestaurant } from "@/lib/food";
@@ -89,11 +89,7 @@ export default function MenuScreen() {
         ]}
       >
         {/* Hero banner */}
-        <MotiView
-          from={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: "spring", damping: 22, stiffness: 200, delay: 40 }}
-        >
+        <Reveal delay={40} distance={0}>
           <Image
             source={found.image}
             placeholder={{ blurhash: BLURHASH }}
@@ -101,15 +97,10 @@ export default function MenuScreen() {
             transition={300}
             style={styles.heroBanner}
           />
-        </MotiView>
+        </Reveal>
 
         {/* Restaurant info block */}
-        <MotiView
-          from={{ opacity: 0, translateY: 14 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: "timing", duration: 360, delay: 120 }}
-          style={styles.infoBlock}
-        >
+        <Reveal delay={120} style={styles.infoBlock}>
           <Text style={styles.restaurantName}>{found.name}</Text>
           <Text style={styles.cuisineLabel}>{found.cuisine}</Text>
           <View style={styles.metaRow}>
@@ -119,49 +110,34 @@ export default function MenuScreen() {
             <Text style={styles.metaDot}> · </Text>
             <Text style={styles.metaText}>{deliveryLabel}</Text>
           </View>
-        </MotiView>
+        </Reveal>
 
         {/* Divider */}
         <View style={styles.divider} />
 
         {/* Menu heading */}
-        <MotiView
-          from={{ opacity: 0, translateY: 8 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: "timing", duration: 300, delay: 180 }}
-          style={styles.menuHeader}
-        >
+        <Reveal delay={180} distance={8} style={styles.menuHeader}>
           <Text style={styles.menuHeading}>Menu</Text>
-        </MotiView>
+        </Reveal>
 
         {/* Menu items */}
         {found.menu.map((item, i) => (
-          <MotiView
-            key={item.id}
-            from={{ opacity: 0, translateY: 10 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: "timing", duration: 280, delay: 200 + i * 40 }}
-          >
+          <Reveal key={item.id} delay={200 + i * 40} distance={10}>
             <MenuItemRow item={item} />
-          </MotiView>
+          </Reveal>
         ))}
       </ScrollView>
 
       {/* Sticky order bar — outside ScrollView */}
       {hasItems ? (
-        <MotiView
-          from={{ opacity: 0, translateY: 30 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: "spring", damping: 20, stiffness: 260 }}
-          style={[styles.orderBar, { paddingBottom: bottomPad }]}
-        >
+        <Reveal delay={0} distance={30} style={[styles.orderBar, { paddingBottom: bottomPad }]}>
           <PillButton
             label={`View order · ${count} ${itemWord} · ${usd(total)}`}
             onPress={() => router.push("/food/track")}
             variant="solid"
             style={styles.orderBarButton}
           />
-        </MotiView>
+        </Reveal>
       ) : (
         <View style={[styles.orderBarEmpty, { paddingBottom: bottomPad }]}>
           <Text style={styles.orderBarEmptyText}>Add items to start your order</Text>

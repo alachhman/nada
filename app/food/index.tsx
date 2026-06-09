@@ -3,7 +3,7 @@ import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-n
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { MotiView } from "moti";
+import { Reveal } from "@/components/ui/Reveal";
 import { tokens } from "@/lib/theme";
 import { RESTAURANTS } from "@/lib/food";
 import { useFoodOrder } from "@/components/providers/FoodOrderProvider";
@@ -42,26 +42,16 @@ export default function RestaurantsScreen() {
         contentContainerStyle={styles.scroll}
       >
         {/* Header */}
-        <MotiView
-          from={{ opacity: 0, translateY: 12 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: "timing", duration: 360, delay: 60 }}
-          style={styles.header}
-        >
+        <Reveal delay={60} style={styles.header}>
           <Text style={styles.title}>Order in</Text>
           <Text style={styles.subtitle}>Browse. Order. Don't pay. Obviously.</Text>
-        </MotiView>
+        </Reveal>
 
         {/* Restaurant list with staggered entrance */}
         {RESTAURANTS.map((restaurant, i) => (
-          <MotiView
-            key={restaurant.id}
-            from={{ opacity: 0, translateY: 20 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: "spring", damping: 22, stiffness: 200, delay: 120 + i * 60 }}
-          >
+          <Reveal key={restaurant.id} delay={120 + i * 60}>
             <RestaurantCard restaurant={restaurant} />
-          </MotiView>
+          </Reveal>
         ))}
 
         <View style={styles.bottomPad} />

@@ -2,7 +2,7 @@ import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-n
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { MotiView } from "moti";
+import { Reveal } from "@/components/ui/Reveal";
 import { router } from "expo-router";
 import { tokens } from "@/lib/theme";
 import { useNada } from "@/components/providers/NadaProvider";
@@ -94,18 +94,6 @@ export default function YouScreen() {
         </Reveal>
       </ScrollView>
     </SafeAreaView>
-  );
-}
-
-function Reveal({ delay, children }: { delay: number; children: React.ReactNode }) {
-  return (
-    <MotiView
-      from={{ opacity: 0, translateY: 14 }}
-      animate={{ opacity: 1, translateY: 0 }}
-      transition={{ type: "timing", duration: 420, delay }}
-    >
-      {children}
-    </MotiView>
   );
 }
 

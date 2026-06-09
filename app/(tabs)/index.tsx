@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { MotiView } from "moti";
+import { Reveal } from "@/components/ui/Reveal";
 import { tokens } from "@/lib/theme";
 import { usd } from "@/lib/format";
 import { CATALOG } from "@/lib/catalog";
@@ -122,18 +122,6 @@ export default function ShopScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
-  );
-}
-
-function Reveal({ delay, children }: { delay: number; children: React.ReactNode }) {
-  return (
-    <MotiView
-      from={{ opacity: 0, translateY: 16 }}
-      animate={{ opacity: 1, translateY: 0 }}
-      transition={{ type: "timing", duration: 420, delay }}
-    >
-      {children}
-    </MotiView>
   );
 }
 
