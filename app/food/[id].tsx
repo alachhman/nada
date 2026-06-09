@@ -1,13 +1,172 @@
-import { StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useEffect } from "react";
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Image } from "expo-image";
+import { Ionicons } from "@expo/vector-icons";
+import { MotiView } from "moti";
 import { tokens } from "@/lib/theme";
+import { usd } from "@/lib/format";
+import { getRestaurant } from "@/lib/food";
+import { useFoodOrder } from "@/components/providers/FoodOrderProvider";
+import { MenuItemRow } from "@/components/food/MenuItemRow";
+import { PillButton } from "@/components/ui/PillButton";
+
+const BLURHASH = "L6Pj0^jE.AyE_3t7t7R**0o#DgR4";
+const ORDER_BAR_HEIGHT = 90;
 
 export default function MenuScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
+  const { restaurant, setRestaurant, items, total } = useFoodOrder();
+  const insets = useSafeAreaInsets();
+
+  const found = getRestaurant(id ?? "");
+
+  // Set restaurant context on mount, keyed on id to avoid infinite re-renders
+  useEffect(() => {
+    if (found) {
+      setRestaurant(found);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [found?.id]);
+
+  // Not found state
+  if (!found) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.emptyState}>
+          <Ionicons name="storefront-outline" size={52} color={tokens.colors.muted} />
+          <Text style={styles.emptyTitle}>Restaurant not found</Text>
+          <Text style={styles.emptySubtitle}>
+            This spot may have moved or no longer exists.
+          </Text>
+          <PillButton
+            label="Back"
+            onPress={() => {
+              if (router.canGoBack()) router.back();
+              else router.replace("/food");
+            }}
+            variant="solid"
+            style={styles.emptyButton}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Order totals
+  const count = items.reduce((s, i) => s + i.qty, 0);
+  const hasItems = count > 0;
+  const itemWord = count === 1 ? "item" : "items";
+  const deliveryLabel =
+    found.deliveryFee === 0 ? "Free delivery" : `${usd(found.deliveryFee)} delivery`;
+  const bottomPad = Math.max(insets.bottom, tokens.space.lg);
+
   return (
-    <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
-      <View style={styles.center}>
-        <Text style={styles.label}>Menu</Text>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      {/* Floating back button — sits above the hero image */}
+      <View style={styles.backWrap} pointerEvents="box-none">
+        <Pressable
+          onPress={() => {
+            if (router.canGoBack()) router.back();
+            else router.replace("/food");
+          }}
+          style={styles.backButton}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+          hitSlop={8}
+        >
+          <Ionicons name="chevron-back" size={22} color={tokens.colors.ink} />
+        </Pressable>
       </View>
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          styles.scroll,
+          { paddingBottom: hasItems ? ORDER_BAR_HEIGHT + tokens.space.xl : tokens.space.xxxl },
+        ]}
+      >
+        {/* Hero banner */}
+        <MotiView
+          from={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", damping: 22, stiffness: 200, delay: 40 }}
+        >
+          <Image
+            source={found.image}
+            placeholder={{ blurhash: BLURHASH }}
+            contentFit="cover"
+            transition={300}
+            style={styles.heroBanner}
+          />
+        </MotiView>
+
+        {/* Restaurant info block */}
+        <MotiView
+          from={{ opacity: 0, translateY: 14 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: "timing", duration: 360, delay: 120 }}
+          style={styles.infoBlock}
+        >
+          <Text style={styles.restaurantName}>{found.name}</Text>
+          <Text style={styles.cuisineLabel}>{found.cuisine}</Text>
+          <View style={styles.metaRow}>
+            <Text style={styles.metaText}>★ {found.rating.toFixed(1)}</Text>
+            <Text style={styles.metaDot}> · </Text>
+            <Text style={styles.metaText}>{found.etaMins} min</Text>
+            <Text style={styles.metaDot}> · </Text>
+            <Text style={styles.metaText}>{deliveryLabel}</Text>
+          </View>
+        </MotiView>
+
+        {/* Divider */}
+        <View style={styles.divider} />
+
+        {/* Menu heading */}
+        <MotiView
+          from={{ opacity: 0, translateY: 8 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: "timing", duration: 300, delay: 180 }}
+          style={styles.menuHeader}
+        >
+          <Text style={styles.menuHeading}>Menu</Text>
+        </MotiView>
+
+        {/* Menu items */}
+        {found.menu.map((item, i) => (
+          <MotiView
+            key={item.id}
+            from={{ opacity: 0, translateY: 10 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={{ type: "timing", duration: 280, delay: 200 + i * 40 }}
+          >
+            <MenuItemRow item={item} />
+          </MotiView>
+        ))}
+      </ScrollView>
+
+      {/* Sticky order bar — outside ScrollView */}
+      {hasItems ? (
+        <MotiView
+          from={{ opacity: 0, translateY: 30 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: "spring", damping: 20, stiffness: 260 }}
+          style={[styles.orderBar, { paddingBottom: bottomPad }]}
+        >
+          <PillButton
+            label={`View order · ${count} ${itemWord} · ${usd(total)}`}
+            onPress={() => router.push("/food/track")}
+            variant="solid"
+            style={styles.orderBarButton}
+          />
+        </MotiView>
+      ) : (
+        <View style={[styles.orderBarEmpty, { paddingBottom: bottomPad }]}>
+          <Text style={styles.orderBarEmptyText}>Add items to start your order</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -17,14 +176,136 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: tokens.colors.bg,
   },
-  center: {
+  backWrap: {
+    position: "absolute",
+    top: Platform.select({ ios: 56, android: 48, default: 56 }),
+    left: tokens.space.xl,
+    zIndex: 10,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: tokens.radius.pill,
+    backgroundColor: tokens.colors.surface,
+    alignItems: "center",
+    justifyContent: "center",
+    ...tokens.shadow.card,
+  },
+  scroll: {
+    // no horizontal padding at root — hero is full-bleed
+  },
+  heroBanner: {
+    width: "100%",
+    aspectRatio: 16 / 9,
+    backgroundColor: tokens.colors.bg,
+  },
+  infoBlock: {
+    paddingHorizontal: tokens.space.xl,
+    paddingTop: tokens.space.lg,
+    gap: 4,
+  },
+  restaurantName: {
+    fontSize: 26,
+    fontWeight: "800",
+    color: tokens.colors.ink,
+    letterSpacing: -0.5,
+    lineHeight: 32,
+  },
+  cuisineLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: tokens.colors.muted,
+  },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: tokens.space.xs,
+    flexWrap: "wrap",
+  },
+  metaText: {
+    fontSize: 12.5,
+    fontWeight: "500",
+    color: tokens.colors.muted,
+  },
+  metaDot: {
+    fontSize: 12.5,
+    color: tokens.colors.hairline,
+    fontWeight: "500",
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: tokens.colors.hairline,
+    marginHorizontal: tokens.space.xl,
+    marginTop: tokens.space.xl,
+  },
+  menuHeader: {
+    paddingHorizontal: tokens.space.xl,
+    paddingTop: tokens.space.lg,
+    paddingBottom: tokens.space.xs,
+  },
+  menuHeading: {
+    fontSize: 20,
+    fontWeight: "800",
+    color: tokens.colors.ink,
+    letterSpacing: -0.3,
+  },
+  // Order bar (has items)
+  orderBar: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: tokens.space.xl,
+    paddingTop: tokens.space.lg,
+    backgroundColor: tokens.colors.surface,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: tokens.colors.hairline,
+    ...tokens.shadow.lifted,
+  },
+  orderBarButton: {
+    // fills the bar
+  },
+  // Order bar (empty)
+  orderBarEmpty: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: tokens.space.xl,
+    paddingTop: tokens.space.lg,
+    backgroundColor: tokens.colors.surface,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: tokens.colors.hairline,
+    alignItems: "center",
+  },
+  orderBarEmptyText: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: tokens.colors.muted,
+    textAlign: "center",
+  },
+  // Empty state
+  emptyState: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    paddingHorizontal: tokens.space.xl,
+    gap: tokens.space.md,
   },
-  label: {
-    fontSize: 20,
-    fontWeight: "700",
+  emptyTitle: {
+    fontSize: 22,
+    fontWeight: "800",
     color: tokens.colors.ink,
+    letterSpacing: -0.3,
+    textAlign: "center",
+  },
+  emptySubtitle: {
+    fontSize: 15,
+    fontWeight: "400",
+    color: tokens.colors.muted,
+    textAlign: "center",
+  },
+  emptyButton: {
+    marginTop: tokens.space.md,
   },
 });
