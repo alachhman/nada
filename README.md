@@ -1,0 +1,35 @@
+# nada (iOS)
+
+A native iOS dopamine-placebo shopping app. Browse a real-feeling marketplace, fill a cart,
+hit checkout — and instead of charging you, nada **intercepts** and celebrates the money you
+*didn't* spend.
+
+> you spent nada. nice work.
+
+## Stack
+Expo · Expo Router · React Native · TypeScript · Reanimated + Moti (motion) · expo-haptics ·
+AsyncStorage (persistence). Pure logic (savings/streak reducer, catalog) is framework-agnostic
+and unit-tested with Vitest.
+
+## Develop
+    npm install
+    npm start          # Expo dev server (press i for iOS simulator with full Xcode, w for web)
+    npm run web        # web preview
+    npm test           # unit tests (pure logic)
+    npm run typecheck  # tsc --noEmit
+
+## Verifying
+This environment has only Xcode Command Line Tools, so the app is verified via the **Expo web
+preview** (`npm run web`). Running on the iOS Simulator or TestFlight requires full Xcode.
+
+## How it works
+- `lib/storage.ts` — pure `recordIntercept` reducer (savings + streak, capped history) + AsyncStorage I/O
+- `lib/catalog.ts` — static product catalog · `lib/theme.ts` — design tokens
+- `components/providers/` — Cart + Nada (savings) React contexts, AsyncStorage-persisted
+- `components/intercept/InterceptOverlay.tsx` — the signature "magic moment": processing theater → spring + confetti/glow reveal of "You saved $X"
+- Tabs: **Shop** (marketplace) · **Search** · **Cart** (hosts the intercept) · **You** (savings hub)
+- Other rituals (food delivery, doomscroll, smoke break) are intentional "coming soon" teasers.
+
+## Design
+Warm cream/espresso palette with soft pastel accents and award-calibre motion — see
+`docs/context/design-inspiration.md` and `docs/superpowers/specs/2026-06-08-nada-ios-design.md`.
