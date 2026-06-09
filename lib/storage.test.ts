@@ -55,4 +55,13 @@ describe("recordIntercept", () => {
     const later = recordIntercept(day1, cart, "2026-06-08");
     expect(later.streak).toBe(1);
   });
+
+  it("caps saves at 50 entries with most recent first", () => {
+    let state = INITIAL_STATE;
+    for (let i = 0; i < 55; i++) {
+      state = recordIntercept(state, cart, "2026-06-08");
+    }
+    expect(state.saves).toHaveLength(50);
+    expect(state.saves[0].amount).toBe(203);
+  });
 });

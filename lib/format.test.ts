@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { usd, isSameDay, isYesterday } from "@/lib/format";
+import { usd, isSameDay, isYesterday, isoDay } from "@/lib/format";
 
 describe("usd", () => {
   it("formats whole dollars with no cents", () => {
@@ -31,5 +31,12 @@ describe("isYesterday", () => {
   });
   it("false when prev is the same day", () => {
     expect(isYesterday("2026-06-08", "2026-06-08")).toBe(false);
+  });
+});
+
+describe("isoDay", () => {
+  it("formats a Date to local-time YYYY-MM-DD with zero-padding", () => {
+    const d = new Date(2026, 0, 5);
+    expect(isoDay(d)).toBe("2026-01-05");
   });
 });
