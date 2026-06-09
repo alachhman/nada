@@ -43,7 +43,7 @@ export default function ShopScreen() {
     goToSearch(category);
   };
 
-  const savedLabel = state.totalSaved > 0 ? usd(state.totalSaved) : "$0 saved";
+  const savedLabel = state.totalSaved > 0 ? `${usd(state.totalSaved)} saved` : "$0 saved";
 
   let stagger = 0;
   const nextDelay = () => stagger++ * STAGGER;
@@ -68,7 +68,7 @@ export default function ShopScreen() {
           >
             <Ionicons name="sparkles" size={14} color={tokens.colors.positive} />
             <Text style={styles.savedText}>
-              {state.totalSaved > 0 ? `${usd(state.totalSaved)} saved` : savedLabel}
+              {savedLabel}
             </Text>
           </Pressable>
         </View>

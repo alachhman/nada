@@ -1,10 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useCart } from '@/components/providers/CartProvider';
-
-const CREAM = '#F7F4EE';
-const INK = '#2C2A26';
-const MUTED = '#9E9A93';
+import { tokens } from '@/lib/theme';
 
 export default function TabsLayout() {
   const { items } = useCart();
@@ -15,12 +12,12 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: CREAM,
-          borderTopColor: '#E8E4DC',
+          backgroundColor: tokens.colors.bg,
+          borderTopColor: tokens.colors.hairline,
           borderTopWidth: 1,
         },
-        tabBarActiveTintColor: INK,
-        tabBarInactiveTintColor: MUTED,
+        tabBarActiveTintColor: tokens.colors.ink,
+        tabBarInactiveTintColor: tokens.colors.muted,
       }}
     >
       <Tabs.Screen

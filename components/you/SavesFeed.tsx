@@ -19,8 +19,8 @@ export function SavesFeed({ saves }: SavesFeedProps) {
         </View>
       ) : (
         <View style={styles.list}>
-          {saves.map((entry) => (
-            <View key={entry.timestamp} style={styles.row}>
+          {saves.map((entry, i) => (
+            <View key={`${entry.timestamp}-${i}`} style={styles.row}>
               <Text style={styles.itemNames} numberOfLines={1}>
                 {entry.items.join(", ")}
               </Text>
