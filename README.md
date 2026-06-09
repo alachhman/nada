@@ -29,8 +29,9 @@ preview** (`npm run web`). Running on the iOS Simulator or TestFlight requires f
 - `components/intercept/InterceptOverlay.tsx` — the signature "magic moment": processing theater → spring + confetti/glow reveal of "You saved $X"
 - Tabs: **Shop** (marketplace) · **Search** · **Cart** (hosts the intercept) · **You** (savings hub)
 - **Food delivery ritual** (launched from the You tab): `lib/food.ts` (restaurants + menus), `app/food/` (browse → menu → order → courier tracking), `components/food/CourierMap.tsx` (stylized SVG route + animated courier marker), `lib/courier.ts` (status beats), `components/food/CelebrationReveal.tsx`. Food orders run through the same `intercept` and log to the same You stats.
+- **Doomscroll ritual** (launched from the You tab): `app/scroll/` (an infinite, guilt-free positive feed — wholesome social posts, affirmations, tiny wins, deadpan slow-news, calm imagery via `lib/feed.ts`), tracked as **time reclaimed** + a scroll streak in `components/providers/ScrollProvider.tsx` (`lib/scroll.ts`, separate from the $ savings), with a calm exit summary. Surfaced as a "Reclaimed" block on the You hub.
 - `components/ui/Reveal.tsx` — web-reliable entrance primitive (Reanimated `useEffect`-driven) used app-wide for mount/stagger animations.
-- Remaining rituals (doomscroll, smoke break) are intentional "coming soon" teasers.
+- Remaining ritual (smoke break) is an intentional "coming soon" teaser.
 
 ## Design
 Warm cream/espresso palette with soft pastel accents and award-calibre motion — see
