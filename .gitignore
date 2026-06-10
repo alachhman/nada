@@ -46,3 +46,7 @@ yarn-error.*
 # Next.js (legacy artifacts)
 /.next/
 next-env.d.ts
+
+# EAS local signing credentials (never commit)
+credentials.json
+credentials/
