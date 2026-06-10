@@ -73,15 +73,19 @@ stored locally on-device. Product/feed imagery is loaded from Unsplash's public 
 
 ## 2. Screenshots (required: 6.7" iPhone, 1290×2796)
 
-Capture from the iOS Simulator (needs full Xcode) or a physical iPhone Pro Max.
-Suggested 5-shot story:
-1. Shop home ("Everything you don't need")
-2. The intercept reveal ("You saved $149 · Craving handled") — the money shot
-3. You hub ($ saved, streaks, reclaimed time)
-4. Food delivery courier map
-5. Doomscroll feed ("an endless feed that owes you nothing")
+**Ready to upload:** `store/screenshots/1-shop.png … 5-feed.png` — five marketing
+screenshots at exact 6.7" spec (1290×2796), designed in the studio style (eyebrow +
+bold headline + floating chips + screen panel) with faithful recreations of the real
+app screens:
+1. Shop — "The store where you can't buy anything."
+2. Intercept — "Get the thrill. Keep the money." (the money shot)
+3. You hub — "you spent nada. nice work."
+4. Food courier map — "Track a courier. Pay nothing."
+5. Doomscroll — "A feed that owes you nothing."
 
-Optional captions in the warm cream/espresso style (see `docs/context/design-inspiration.md`).
+Upload these in App Store Connect → your app → the 6.7" display slot (they double for
+the 6.9"/6.5" slots if you let ASC scale, or re-export later). If you'd rather use raw
+device captures, grab them from TestFlight on an iPhone Pro Max and swap them in.
 
 ## 3. Submission runbook
 
