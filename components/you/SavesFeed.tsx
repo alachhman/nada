@@ -26,7 +26,7 @@ export function SavesFeed({ saves }: SavesFeedProps) {
               key={`${entry.timestamp}-${i}`}
               onPress={() => router.push(`/nothing/${entry.timestamp}`)}
               accessibilityRole="button"
-              accessibilityLabel="Track this save"
+              accessibilityLabel={`Track save: ${entry.items.join(", ")} – ${usd(entry.amount)}`}
               style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
             >
               <Text style={styles.itemNames} numberOfLines={1}>

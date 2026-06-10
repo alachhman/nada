@@ -27,6 +27,7 @@
   - 0 (< 2 min): "Order intercepted" / "Our warehouse is carefully packing nothing."
   - 1 (< 1 h): "Your nothing has shipped" / "It weighs nothing. The courier is thrilled."
   - 2 (< 24 h): "Your $X is staying home" / "Out for non-delivery." (the $X substitution happens at render)
+    - **Accepted deviation:** stage-2 sublabel ships as "Your money is staying home" (no $X interpolation) — the tracker header already renders `usd(amount)` + "staying home"; substituting the amount in the sublabel too would be redundant.
   - 3 (≥ 24 h): "Delivered: nothing" / "Enjoy. Your money never left."
   `progress` = elapsed/24h clamped 0..1. Boundary tests.
 - [ ] Helper `itemsKeptOut(saves): number` (sum itemCount ?? items.length) in `lib/storage.ts` or `lib/nothing.ts` + test.

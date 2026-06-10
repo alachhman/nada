@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { Platform, Pressable, Share, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, Share, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import { Easing, useSharedValue, withTiming } from "react-native-reanimated";
+import { cancelAnimation, Easing, useSharedValue, withTiming } from "react-native-reanimated";
 import { tokens } from "@/lib/theme";
 import { usd } from "@/lib/format";
 import { NOTHING_STAGES, nothingStageFor } from "@/lib/nothing";
@@ -16,9 +16,10 @@ export default function NothingTrackerScreen() {
   const { ts } = useLocalSearchParams<{ ts: string }>();
   const { state } = useNada();
 
+  const tsNum = Number(ts);
   const save = useMemo(
-    () => state.saves.find((s) => s.timestamp === Number(ts)),
-    [state.saves, ts],
+    () => (Number.isFinite(tsNum) ? state.saves.find((s) => s.timestamp === tsNum) : undefined),
+    [state.saves, tsNum],
   );
 
   // Drive the courier with a shared value, set on the JS thread. We animate
@@ -35,6 +36,7 @@ export default function NothingTrackerScreen() {
       duration: 1100,
       easing: Easing.out(Easing.cubic),
     });
+    return () => cancelAnimation(progress);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
