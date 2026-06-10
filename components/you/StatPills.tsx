@@ -14,7 +14,7 @@ export function StatPills({ streak, interceptCount }: StatPillsProps) {
           {streak}
           {streak > 0 ? " 🔥" : ""}
         </Text>
-        <Text style={styles.cardLabel}>Streak</Text>
+        <Text style={styles.cardLabel}>No-buy streak</Text>
       </View>
       <View style={styles.card}>
         <Text style={styles.value}>{interceptCount}</Text>

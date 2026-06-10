@@ -104,9 +104,17 @@ export default function YouScreen() {
           </View>
         </Reveal>
 
-        {/* Reset button — subtle, for testing */}
+        {/* Footer links — subtle: why this works + reset */}
         <Reveal delay={nextDelay()}>
           <View style={styles.resetRow}>
+            <Pressable
+              onPress={() => router.push("/why")}
+              hitSlop={12}
+              accessibilityRole="button"
+              accessibilityLabel="Why this works"
+            >
+              <Text style={styles.whyText}>why this works</Text>
+            </Pressable>
             <Pressable
               onPress={handleReset}
               hitSlop={12}
@@ -236,10 +244,17 @@ const styles = StyleSheet.create({
     marginTop: tokens.space.xxl,
   },
 
-  /* Reset */
+  /* Footer links */
   resetRow: {
     alignItems: "center",
     marginTop: tokens.space.xxxl,
+    gap: tokens.space.md,
+  },
+  whyText: {
+    fontSize: 12.5,
+    fontWeight: "600",
+    color: tokens.colors.muted,
+    letterSpacing: 0.2,
   },
   resetText: {
     fontSize: 12,

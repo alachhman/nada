@@ -15,15 +15,16 @@ export default function CartScreen() {
   const router = useRouter();
   const { items, total, clear } = useCart();
   const { intercept } = useNada();
-  const [overlay, setOverlay] = useState<{ amount: number } | null>(null);
+  const [overlay, setOverlay] = useState<{ amount: number; itemCount: number } | null>(null);
 
   const checkout = () => {
     if (items.length === 0) return;
     if (Platform.OS !== "web") void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    // Capture saved amount BEFORE clearing — clear() would zero it out.
+    // Capture saved amount + total quantity BEFORE clearing — clear() would zero them out.
     const saved = intercept(items);
+    const itemCount = items.reduce((sum, item) => sum + item.qty, 0);
     clear();
-    setOverlay({ amount: saved });
+    setOverlay({ amount: saved, itemCount });
   };
 
   const handleClose = () => {
@@ -68,7 +69,7 @@ export default function CartScreen() {
       )}
 
       {overlay ? (
-        <InterceptOverlay amount={overlay.amount} onClose={handleClose} />
+        <InterceptOverlay amount={overlay.amount} itemCount={overlay.itemCount} onClose={handleClose} />
       ) : null}
     </SafeAreaView>
   );

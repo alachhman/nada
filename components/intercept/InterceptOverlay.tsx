@@ -19,6 +19,7 @@ type Phase = "processing" | "done";
 
 interface InterceptOverlayProps {
   amount: number;
+  itemCount?: number;
   processingMs?: number;
   onClose: () => void;
 }
@@ -36,7 +37,7 @@ export function useInterceptPhase(processingMs: number): Phase {
   return phase;
 }
 
-export function InterceptOverlay({ amount, processingMs = 2000, onClose }: InterceptOverlayProps) {
+export function InterceptOverlay({ amount, itemCount, processingMs = 2000, onClose }: InterceptOverlayProps) {
   const phase = useInterceptPhase(processingMs);
 
   // Light haptic when the processing theater begins.
@@ -47,7 +48,7 @@ export function InterceptOverlay({ amount, processingMs = 2000, onClose }: Inter
   return (
     <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
       <View style={styles.backdrop}>
-        {phase === "processing" ? <Processing /> : <Reveal amount={amount} onClose={onClose} />}
+        {phase === "processing" ? <Processing /> : <Reveal amount={amount} itemCount={itemCount} onClose={onClose} />}
       </View>
     </Modal>
   );
@@ -82,7 +83,7 @@ function Processing() {
 
 /* ---------- Done / reveal phase ---------- */
 
-function Reveal({ amount, onClose }: { amount: number; onClose: () => void }) {
+function Reveal({ amount, itemCount, onClose }: { amount: number; itemCount?: number; onClose: () => void }) {
   const { width, height } = useWindowDimensions();
 
   // Glow + emblem spring-in.
@@ -138,6 +139,11 @@ function Reveal({ amount, onClose }: { amount: number; onClose: () => void }) {
         <Text style={styles.reassurance}>
           You got the hunt, the pick, the click — and kept the money. That&apos;s the whole trick.
         </Text>
+        {itemCount != null && itemCount > 0 ? (
+          <Text style={styles.keptOut}>
+            {itemCount} thing{itemCount === 1 ? "" : "s"} kept out of your house · 0 boxes headed to your door
+          </Text>
+        ) : null}
       </Animated.View>
 
       <Animated.View style={[styles.cta, textStyle]}>
@@ -328,6 +334,14 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     textAlign: "center",
     color: "rgba(244,241,234,0.7)",
+    maxWidth: 320,
+  },
+  keptOut: {
+    marginTop: tokens.space.md,
+    fontSize: 12.5,
+    lineHeight: 18,
+    textAlign: "center",
+    color: "rgba(244,241,234,0.45)",
     maxWidth: 320,
   },
   cta: {

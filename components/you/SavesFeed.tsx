@@ -1,4 +1,6 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { tokens } from "@/lib/theme";
 import { usd } from "@/lib/format";
 import type { SaveEntry } from "@/lib/types";
@@ -20,12 +22,24 @@ export function SavesFeed({ saves }: SavesFeedProps) {
       ) : (
         <View style={styles.list}>
           {saves.map((entry, i) => (
-            <View key={`${entry.timestamp}-${i}`} style={styles.row}>
+            <Pressable
+              key={`${entry.timestamp}-${i}`}
+              onPress={() => router.push(`/nothing/${entry.timestamp}`)}
+              accessibilityRole="button"
+              accessibilityLabel="Track this save"
+              style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+            >
               <Text style={styles.itemNames} numberOfLines={1}>
                 {entry.items.join(", ")}
               </Text>
               <Text style={styles.amount}>+{usd(entry.amount)}</Text>
-            </View>
+              <Ionicons
+                name="chevron-forward"
+                size={16}
+                color={tokens.colors.muted}
+                style={styles.chevron}
+              />
+            </Pressable>
           ))}
         </View>
       )}
@@ -74,6 +88,12 @@ const styles = StyleSheet.create({
     paddingVertical: tokens.space.md + 2,
     paddingHorizontal: tokens.space.lg,
     ...tokens.shadow.card,
+  },
+  rowPressed: {
+    opacity: 0.7,
+  },
+  chevron: {
+    marginLeft: tokens.space.sm,
   },
   itemNames: {
     flex: 1,
