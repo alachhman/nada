@@ -22,6 +22,11 @@ and unit-tested with Vitest.
 This environment has only Xcode Command Line Tools, so the app is verified via the **Expo web
 preview** (`npm run web`). Running on the iOS Simulator or TestFlight requires full Xcode.
 
+## Shipping to the App Store
+The EAS project is linked (`@antneee/nada`) and the listing kit lives in
+[`store/app-store.md`](store/app-store.md) — metadata, privacy answers, review notes, and the
+step-by-step runbook (`npm run build:ios` → `npm run submit:ios`). Privacy policy: [`PRIVACY.md`](PRIVACY.md).
+
 ## How it works
 - `lib/storage.ts` — pure `recordIntercept` reducer (savings + streak, capped history) + AsyncStorage I/O
 - `lib/catalog.ts` — static product catalog · `lib/theme.ts` — design tokens
