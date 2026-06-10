@@ -3,6 +3,7 @@ import { Platform, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import Animated, {
+  cancelAnimation,
   useAnimatedStyle,
   useSharedValue,
   withDelay,
@@ -38,6 +39,13 @@ export function BreakComplete({ seconds, onClose }: BreakCompleteProps) {
     emblemScale.value = withSpring(1, { damping: 18, stiffness: 120, mass: 0.8 });
     glowOpacity.value = withDelay(80, withTiming(1, { duration: 600 }));
     glowScale.value = withDelay(80, withSpring(1, { damping: 20, stiffness: 80 }));
+
+    return () => {
+      cancelAnimation(emblemScale);
+      cancelAnimation(emblemOpacity);
+      cancelAnimation(glowOpacity);
+      cancelAnimation(glowScale);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

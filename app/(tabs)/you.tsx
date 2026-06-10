@@ -6,6 +6,8 @@ import { Reveal } from "@/components/ui/Reveal";
 import { router } from "expo-router";
 import { tokens } from "@/lib/theme";
 import { useNada } from "@/components/providers/NadaProvider";
+import { useScroll } from "@/components/providers/ScrollProvider";
+import { useBreaks } from "@/components/providers/BreakProvider";
 import { HeroStat } from "@/components/you/HeroStat";
 import { StatPills } from "@/components/you/StatPills";
 import { SavesFeed } from "@/components/you/SavesFeed";
@@ -14,20 +16,23 @@ import { BreaksBlock } from "@/components/you/BreaksBlock";
 
 const STAGGER = 80;
 
-type RitualCard = {
+type RitualConfig = {
   icon: keyof typeof Ionicons.glyphMap;
   title: string;
   tint: string;
+  route: string;
 };
 
-const RITUALS: RitualCard[] = [
-  { icon: "bicycle-outline", title: "Food delivery", tint: tokens.colors.peach },
-  { icon: "phone-portrait-outline", title: "Doomscroll", tint: tokens.colors.sage },
-  { icon: "flame-outline", title: "Smoke break", tint: tokens.colors.lilac },
+const RITUALS: RitualConfig[] = [
+  { icon: "bicycle-outline", title: "Food delivery", tint: tokens.colors.peach, route: "/food" },
+  { icon: "phone-portrait-outline", title: "Doomscroll", tint: tokens.colors.sage, route: "/scroll" },
+  { icon: "flame-outline", title: "Smoke break", tint: tokens.colors.lilac, route: "/break" },
 ];
 
 export default function YouScreen() {
   const { state, reset } = useNada();
+  const { reset: resetScroll } = useScroll();
+  const { reset: resetBreaks } = useBreaks();
 
   let stagger = 0;
   const nextDelay = () => stagger++ * STAGGER;
@@ -35,6 +40,8 @@ export default function YouScreen() {
   const handleReset = () => {
     if (Platform.OS !== "web") void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     reset();
+    resetScroll();
+    resetBreaks();
   };
 
   return (
@@ -71,9 +78,9 @@ export default function YouScreen() {
               Replace habits, not just purchases.
             </Text>
             <View style={styles.ritualsGrid}>
-              <FoodRitualCard ritual={RITUALS[0]} />
-              <DoomscrollRitualCard ritual={RITUALS[1]} />
-              <SmokeBreakRitualCard ritual={RITUALS[2]} />
+              {RITUALS.map((ritual) => (
+                <RitualCard key={ritual.route} ritual={ritual} />
+              ))}
             </View>
           </View>
         </Reveal>
@@ -103,73 +110,17 @@ export default function YouScreen() {
   );
 }
 
-function FoodRitualCard({ ritual }: { ritual: RitualCard }) {
+function RitualCard({ ritual }: { ritual: RitualConfig }) {
   const handlePress = () => {
     if (Platform.OS !== "web") void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.push("/food");
+    router.push(ritual.route as Parameters<typeof router.push>[0]);
   };
 
   return (
     <Pressable
       onPress={handlePress}
       accessibilityRole="button"
-      accessibilityLabel="Open Food delivery ritual"
-      style={({ pressed }) => [
-        styles.ritualCard,
-        { backgroundColor: ritual.tint + "88" },
-        pressed && { opacity: 0.75 },
-      ]}
-    >
-      <View style={[styles.ritualIconBg, { backgroundColor: ritual.tint }]}>
-        <Ionicons name={ritual.icon} size={20} color={tokens.colors.ink} />
-      </View>
-      <Text style={styles.ritualTitle} numberOfLines={1}>
-        {ritual.title}
-      </Text>
-      <Text style={styles.ritualCta}>Try it →</Text>
-    </Pressable>
-  );
-}
-
-function DoomscrollRitualCard({ ritual }: { ritual: RitualCard }) {
-  const handlePress = () => {
-    if (Platform.OS !== "web") void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.push("/scroll");
-  };
-
-  return (
-    <Pressable
-      onPress={handlePress}
-      accessibilityRole="button"
-      accessibilityLabel="Open Doomscroll ritual"
-      style={({ pressed }) => [
-        styles.ritualCard,
-        { backgroundColor: ritual.tint + "88" },
-        pressed && { opacity: 0.75 },
-      ]}
-    >
-      <View style={[styles.ritualIconBg, { backgroundColor: ritual.tint }]}>
-        <Ionicons name={ritual.icon} size={20} color={tokens.colors.ink} />
-      </View>
-      <Text style={styles.ritualTitle} numberOfLines={1}>
-        {ritual.title}
-      </Text>
-      <Text style={styles.ritualCta}>Try it →</Text>
-    </Pressable>
-  );
-}
-
-function SmokeBreakRitualCard({ ritual }: { ritual: RitualCard }) {
-  const handlePress = () => {
-    if (Platform.OS !== "web") void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.push("/break");
-  };
-
-  return (
-    <Pressable
-      onPress={handlePress}
-      accessibilityRole="button"
-      accessibilityLabel="Open Smoke break ritual"
+      accessibilityLabel={`Open ${ritual.title} ritual`}
       style={({ pressed }) => [
         styles.ritualCard,
         { backgroundColor: ritual.tint + "88" },
@@ -220,18 +171,6 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: tokens.colors.ink,
     letterSpacing: -0.4,
-  },
-  soonBadge: {
-    backgroundColor: tokens.colors.butter,
-    borderRadius: tokens.radius.pill,
-    paddingHorizontal: tokens.space.sm,
-    paddingVertical: 3,
-  },
-  soonBadgeText: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: tokens.colors.ink,
-    letterSpacing: 0.3,
   },
   sectionSubtitle: {
     fontSize: 13.5,

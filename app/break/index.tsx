@@ -39,6 +39,7 @@ export default function BreakScreen() {
 
   const startRef = useRef<number>(0);
   const committedRef = useRef<boolean>(false);
+  const durationSecRef = useRef<number>(minutes * 60);
   const durationMs = minutes * 60 * 1000;
 
   // Countdown ticker — drives off wall-clock so backgrounded tabs stay accurate.
@@ -65,6 +66,7 @@ export default function BreakScreen() {
     if (Platform.OS !== "web") {
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
+    durationSecRef.current = minutes * 60;
     startRef.current = Date.now();
     committedRef.current = false;
     setRemaining(minutes * 60);
@@ -75,7 +77,7 @@ export default function BreakScreen() {
     if (committedRef.current) return;
     committedRef.current = true;
     const elapsed = (Date.now() - startRef.current) / 1000;
-    const clamped = Math.min(minutes * 60, Math.round(elapsed));
+    const clamped = Math.min(durationSecRef.current, Math.round(elapsed));
     setRecordedSeconds(clamped);
     recordBreak(clamped);
     setPhase("done");
