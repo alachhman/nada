@@ -1,23 +1,22 @@
 import { StyleSheet, Text, View } from "react-native";
 import { tokens } from "@/lib/theme";
-import { useScroll } from "@/components/providers/ScrollProvider";
+import { useBreaks } from "@/components/providers/BreakProvider";
 import { formatDuration } from "@/lib/duration";
 
-export function ReclaimedBlock() {
-  const { state } = useScroll();
+export function BreaksBlock() {
+  const { state } = useBreaks();
+  const { breaksTaken, secondsAway } = state;
+
+  const sub =
+    secondsAway > 0
+      ? `${formatDuration(secondsAway)} away from cigarettes`
+      : "step outside sometime";
 
   return (
     <View style={styles.card}>
-      <Text style={styles.heading}>RECLAIMED</Text>
-      <Text style={styles.duration}>
-        {formatDuration(state.secondsReclaimed)}
-      </Text>
-      <Text style={styles.sub}>of guilt-free scrolling</Text>
-      {state.streak > 0 && (
-        <View style={styles.streakPill}>
-          <Text style={styles.streakText}>{state.streak} 🌀</Text>
-        </View>
-      )}
+      <Text style={styles.heading}>BREAKS</Text>
+      <Text style={styles.count}>{breaksTaken} taken</Text>
+      <Text style={styles.sub}>{sub}</Text>
     </View>
   );
 }
@@ -42,7 +41,7 @@ const styles = StyleSheet.create({
     color: tokens.colors.muted,
     textTransform: "uppercase",
   },
-  duration: {
+  count: {
     fontSize: 40,
     fontWeight: "900",
     color: tokens.colors.positive,
@@ -54,17 +53,5 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: tokens.colors.muted,
     textAlign: "center",
-  },
-  streakPill: {
-    marginTop: tokens.space.xs,
-    backgroundColor: tokens.colors.sage,
-    borderRadius: tokens.radius.pill,
-    paddingHorizontal: tokens.space.md,
-    paddingVertical: tokens.space.xs,
-  },
-  streakText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: tokens.colors.ink,
   },
 });

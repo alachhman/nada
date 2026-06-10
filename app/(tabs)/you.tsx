@@ -10,6 +10,7 @@ import { HeroStat } from "@/components/you/HeroStat";
 import { StatPills } from "@/components/you/StatPills";
 import { SavesFeed } from "@/components/you/SavesFeed";
 import { ReclaimedBlock } from "@/components/you/ReclaimedBlock";
+import { BreaksBlock } from "@/components/you/BreaksBlock";
 
 const STAGGER = 80;
 
@@ -52,10 +53,11 @@ export default function YouScreen() {
           <StatPills streak={state.streak} interceptCount={state.interceptCount} />
         </Reveal>
 
-        {/* Reclaimed block */}
+        {/* Reclaimed + Breaks two-up row */}
         <Reveal delay={nextDelay()}>
-          <View style={styles.reclaimedSection}>
+          <View style={styles.statsRow}>
             <ReclaimedBlock />
+            <BreaksBlock />
           </View>
         </Reveal>
 
@@ -71,7 +73,7 @@ export default function YouScreen() {
             <View style={styles.ritualsGrid}>
               <FoodRitualCard ritual={RITUALS[0]} />
               <DoomscrollRitualCard ritual={RITUALS[1]} />
-              <RitualCard ritual={RITUALS[2]} />
+              <SmokeBreakRitualCard ritual={RITUALS[2]} />
             </View>
           </View>
         </Reveal>
@@ -157,19 +159,31 @@ function DoomscrollRitualCard({ ritual }: { ritual: RitualCard }) {
   );
 }
 
-function RitualCard({ ritual }: { ritual: RitualCard }) {
+function SmokeBreakRitualCard({ ritual }: { ritual: RitualCard }) {
+  const handlePress = () => {
+    if (Platform.OS !== "web") void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.push("/break");
+  };
+
   return (
-    <View style={[styles.ritualCard, { backgroundColor: ritual.tint + "55" }]}>
+    <Pressable
+      onPress={handlePress}
+      accessibilityRole="button"
+      accessibilityLabel="Open Smoke break ritual"
+      style={({ pressed }) => [
+        styles.ritualCard,
+        { backgroundColor: ritual.tint + "88" },
+        pressed && { opacity: 0.75 },
+      ]}
+    >
       <View style={[styles.ritualIconBg, { backgroundColor: ritual.tint }]}>
         <Ionicons name={ritual.icon} size={20} color={tokens.colors.ink} />
       </View>
       <Text style={styles.ritualTitle} numberOfLines={1}>
         {ritual.title}
       </Text>
-      <View style={styles.ritualLock}>
-        <Ionicons name="lock-closed-outline" size={11} color={tokens.colors.muted} />
-      </View>
-    </View>
+      <Text style={styles.ritualCta}>Try it →</Text>
+    </Pressable>
   );
 }
 
@@ -182,8 +196,10 @@ const styles = StyleSheet.create({
     paddingBottom: tokens.space.xxxl + tokens.space.xl,
   },
 
-  /* Reclaimed block */
-  reclaimedSection: {
+  /* Reclaimed + Breaks two-up row */
+  statsRow: {
+    flexDirection: "row",
+    gap: tokens.space.md,
     paddingHorizontal: tokens.space.xl,
     marginTop: tokens.space.xxl,
   },
@@ -258,12 +274,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
     opacity: 0.65,
   },
-  ritualLock: {
-    position: "absolute",
-    top: tokens.space.sm,
-    right: tokens.space.sm,
-  },
-
   /* Saves feed spacing */
   savesSection: {
     marginTop: tokens.space.xxl,
