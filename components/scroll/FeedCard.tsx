@@ -134,6 +134,24 @@ function CalmCard({ item }: { item: Extract<FeedItem, { kind: "calm" }> }) {
   );
 }
 
+function PhotoCard({ item }: { item: Extract<FeedItem, { kind: "photo" }> }) {
+  return (
+    <View style={[styles.card, styles.calmCard]}>
+      <View style={styles.calmImageWrap}>
+        <Image
+          source={{ uri: item.uri }}
+          contentFit="cover"
+          transition={250}
+          style={styles.calmImage}
+        />
+      </View>
+      <Text style={styles.calmCaption}>
+        {item.caption ?? "from your camera roll"}
+      </Text>
+    </View>
+  );
+}
+
 export function FeedCard({ item }: { item: FeedItem }) {
   let inner: React.ReactNode = null;
   switch (item.kind) {
@@ -151,6 +169,9 @@ export function FeedCard({ item }: { item: FeedItem }) {
       break;
     case "calm":
       inner = <CalmCard item={item} />;
+      break;
+    case "photo":
+      inner = <PhotoCard item={item} />;
       break;
     case "nada":
       return null;

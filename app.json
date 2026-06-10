@@ -21,7 +21,8 @@
       "bundleIdentifier": "com.nada.shop",
       "buildNumber": "1",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "nada can weave a few of your recent photos into your calm feed. They stay on your device and are never uploaded."
       }
     },
     "android": {
@@ -41,6 +42,12 @@
       "expo-router",
       "expo-status-bar",
       "expo-image",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "nada can weave a few of your recent photos into your calm feed. They stay on your device and are never uploaded."
+        }
+      ],
       [
         "expo-splash-screen",
         {

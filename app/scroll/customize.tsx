@@ -1,10 +1,12 @@
 import { Platform, Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
+import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { Reveal } from "@/components/ui/Reveal";
 import { useFeedPrefs } from "@/components/providers/FeedPrefsProvider";
+import { requestPhotoPermission } from "@/lib/cameraRoll";
 import type { PostType, PhotoTheme } from "@/lib/feedPrefs";
 import { tokens } from "@/lib/theme";
 
@@ -87,6 +89,32 @@ function ToggleRow({
 export default function CustomizeScreen() {
   const router = useRouter();
   const { prefs, setLayout, togglePostType, togglePhotoTheme, setCameraRoll } = useFeedPrefs();
+  // null = no denial message shown; "denied" = permission refused; "web" = web platform
+  const [photoPermNote, setPhotoPermNote] = useState<"denied" | "web" | null>(null);
+
+  const handleCameraRollToggle = async (v: boolean) => {
+    haptic();
+    if (!v) {
+      // Turning off: just update the pref
+      setCameraRoll(false);
+      setPhotoPermNote(null);
+      return;
+    }
+    // Turning on: request permission first
+    if (Platform.OS === "web") {
+      setPhotoPermNote("web");
+      return; // do NOT enable — web has no camera roll
+    }
+    const granted = await requestPhotoPermission();
+    if (granted) {
+      setCameraRoll(true);
+      setPhotoPermNote(null);
+    } else {
+      // Keep pref off, show denial note
+      setCameraRoll(false);
+      setPhotoPermNote("denied");
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
@@ -223,13 +251,28 @@ export default function CustomizeScreen() {
         {/* Your photos */}
         <Section title="Your photos" delay={240}>
           <View style={styles.card}>
-            <ToggleRow
-              label="Weave in recent photos"
-              value={prefs.cameraRoll}
-              onValueChange={(v) => setCameraRoll(v)}
-            />
+            <View style={styles.rowInCard}>
+              <View style={styles.toggleRow}>
+                <Text style={styles.toggleLabel}>Weave in recent photos</Text>
+                <Switch
+                  value={prefs.cameraRoll}
+                  onValueChange={handleCameraRollToggle}
+                  trackColor={{ false: tokens.colors.hairline, true: tokens.colors.accent }}
+                  thumbColor={tokens.colors.surface}
+                  ios_backgroundColor={tokens.colors.hairline}
+                />
+              </View>
+            </View>
           </View>
-          <Text style={styles.mutedNote}>On your device only. Never uploaded.</Text>
+          {photoPermNote === "denied" ? (
+            <Text style={styles.mutedNote}>
+              Allow photo access in Settings to use this.
+            </Text>
+          ) : photoPermNote === "web" ? (
+            <Text style={styles.mutedNote}>Available on device.</Text>
+          ) : (
+            <Text style={styles.mutedNote}>On your device only. Never uploaded.</Text>
+          )}
         </Section>
       </ScrollView>
     </SafeAreaView>

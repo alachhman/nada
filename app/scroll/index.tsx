@@ -17,7 +17,8 @@ import { ImmersiveCard } from "@/components/scroll/ImmersiveCard";
 import { NadaInterstitial } from "@/components/scroll/NadaInterstitial";
 import { ReclaimSummary } from "@/components/scroll/ReclaimSummary";
 import { Reveal } from "@/components/ui/Reveal";
-import { generateFeed, type FeedItem } from "@/lib/feed";
+import { generateFeed, injectPhotos, type FeedItem } from "@/lib/feed";
+import { getRecentPhotos, type CameraPhoto } from "@/lib/cameraRoll";
 import { tokens } from "@/lib/theme";
 import { useScroll } from "@/components/providers/ScrollProvider";
 import { useFeedPrefs } from "@/components/providers/FeedPrefsProvider";
@@ -42,7 +43,10 @@ export default function ScrollScreen() {
     [prefs.postTypes, prefs.photoThemes],
   );
 
-  const [items, setItems] = useState<FeedItem[]>(() => generateFeed(0, 18, prefs));
+  // Camera-roll photos (native-only; always [] on web / denied)
+  const [photos, setPhotos] = useState<CameraPhoto[]>([]);
+
+  const [items, setItems] = useState<FeedItem[]>(() => generateFeed(0, 18, prefs)); // photos injected after mount via effect
   const listRef = useRef<FlatList<FeedItem>>(null);
   const loadingRef = useRef(false);
 
@@ -92,19 +96,32 @@ export default function ScrollScreen() {
     loadingRef.current = false;
   }, [items]);
 
+  // Fetch camera-roll photos once when cameraRoll pref is enabled.
+  // Web-safe: getRecentPhotos returns [] on web (no-op). Clear when disabled.
+  useEffect(() => {
+    if (!prefs.cameraRoll) {
+      setPhotos([]);
+      return;
+    }
+    getRecentPhotos(8).then(setPhotos).catch(() => setPhotos([]));
+  }, [prefs.cameraRoll]);
+
   // Re-seed the feed when content-affecting prefs change so edits apply immediately.
   // Keyed on contentSig (not the prefs object) to avoid an infinite loop.
   useEffect(() => {
-    setItems(generateFeed(0, 18, prefs));
+    setItems(injectPhotos(generateFeed(0, 18, prefs), photos));
     // Best-effort scroll to top
     listRef.current?.scrollToOffset({ offset: 0, animated: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contentSig]);
+  }, [contentSig, photos]);
 
   const loadMore = () => {
     if (loadingRef.current) return;
     loadingRef.current = true;
-    setItems((prev) => [...prev, ...generateFeed(prev.length, 12, prefs)]);
+    setItems((prev) => {
+      const newBatch = injectPhotos(generateFeed(prev.length, 12, prefs), photos);
+      return [...prev, ...newBatch];
+    });
   };
 
   const openCustomize = () => {

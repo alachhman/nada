@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateFeed, type FeedItem } from "@/lib/feed";
+import { generateFeed, injectPhotos, type FeedItem } from "@/lib/feed";
 import {
   DEFAULT_FEED_PREFS,
   togglePostType,
@@ -7,6 +7,7 @@ import {
   type FeedPrefs,
 } from "@/lib/feedPrefs";
 import { PHOTO_POOLS } from "@/lib/feed";
+import type { CameraPhoto } from "@/lib/cameraRoll";
 
 describe("generateFeed", () => {
   it("returns exactly the requested count", () => {
@@ -234,5 +235,75 @@ describe("generateFeed — prefs-aware behaviour", () => {
     const batch1 = generateFeed(0, 24, prefs);
     const batch2 = generateFeed(24, 24, prefs);
     expect([...batch1, ...batch2]).toEqual(combined);
+  });
+});
+
+describe("injectPhotos", () => {
+  const makePhoto = (n: number): CameraPhoto => ({ id: `p${n}`, uri: `file:///photo/${n}.jpg` });
+  const baseItems = generateFeed(0, 20);
+
+  it("with empty photos returns items unchanged", () => {
+    expect(injectPhotos(baseItems, [])).toEqual(baseItems);
+  });
+
+  it("with empty items returns empty array", () => {
+    expect(injectPhotos([], [makePhoto(0)])).toEqual([]);
+  });
+
+  it("inserts a photo item at every everyN-th output position", () => {
+    const photos = [makePhoto(0), makePhoto(1)];
+    const result = injectPhotos(baseItems, photos, 10);
+    // Output positions 10 and 20 should be photo items (the 11th and 21st items)
+    expect(result[10].kind).toBe("photo");
+    expect(result[20].kind).toBe("photo");
+    // Total length = original + number of injections
+    const photoCount = result.filter((i) => i.kind === "photo").length;
+    expect(photoCount).toBe(2);
+  });
+
+  it("injected photo items carry the expected uri and caption", () => {
+    const photos = [makePhoto(7)];
+    const result = injectPhotos(baseItems, photos, 5);
+    const photoItems = result.filter((i): i is FeedItem & { kind: "photo" } => i.kind === "photo");
+    expect(photoItems.length).toBeGreaterThan(0);
+    for (const p of photoItems) {
+      expect(p.uri).toBe("file:///photo/7.jpg");
+      expect(p.caption).toBe("from your camera roll");
+    }
+  });
+
+  it("injected photo ids are unique and follow cam-<n> pattern", () => {
+    const photos = [makePhoto(0), makePhoto(1), makePhoto(2)];
+    const result = injectPhotos(generateFeed(0, 50), photos, 10);
+    const photoItems = result.filter((i): i is FeedItem & { kind: "photo" } => i.kind === "photo");
+    const ids = photoItems.map((p) => p.id);
+    expect(ids).toEqual([...ids].sort()); // cam-0, cam-1, cam-2, cam-3, cam-4
+    ids.forEach((id, i) => expect(id).toBe(`cam-${i}`));
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("cycles through photos when there are more slots than photos", () => {
+    const photos = [makePhoto(0), makePhoto(1)];
+    const result = injectPhotos(generateFeed(0, 60), photos, 10);
+    const photoItems = result.filter((i): i is FeedItem & { kind: "photo" } => i.kind === "photo");
+    // 60 base items → 6 injections; photos cycle 0,1,0,1,0,1
+    expect(photoItems.length).toBe(6);
+    expect(photoItems[0].uri).toBe("file:///photo/0.jpg");
+    expect(photoItems[1].uri).toBe("file:///photo/1.jpg");
+    expect(photoItems[2].uri).toBe("file:///photo/0.jpg");
+    expect(photoItems[3].uri).toBe("file:///photo/1.jpg");
+  });
+
+  it("first item in the output is never a photo item (content comes first)", () => {
+    const photos = [makePhoto(0)];
+    const result = injectPhotos(generateFeed(0, 5), photos, 10);
+    expect(result[0].kind).not.toBe("photo");
+  });
+
+  it("non-photo items from the original feed are preserved in order", () => {
+    const photos = [makePhoto(0)];
+    const result = injectPhotos(baseItems, photos, 10);
+    const nonPhoto = result.filter((i) => i.kind !== "photo");
+    expect(nonPhoto).toEqual(baseItems);
   });
 });

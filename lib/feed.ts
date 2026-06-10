@@ -1,5 +1,6 @@
 import type { PhotoTheme } from "@/lib/feedPrefs";
 import { DEFAULT_FEED_PREFS, type FeedPrefs } from "@/lib/feedPrefs";
+import type { CameraPhoto } from "@/lib/cameraRoll";
 
 function img(id: string) {
   return `https://images.unsplash.com/${id}?auto=format&fit=crop&w=600&q=70`;
@@ -347,6 +348,49 @@ function getPoolItem(
       return { image: p.image, caption: p.caption };
     }
   }
+}
+
+/**
+ * Inject camera-roll photo items into a feed at regular intervals.
+ *
+ * Pure, side-effect-free helper — suitable for unit tests.
+ *
+ * @param items   Base feed items (output of generateFeed or a concatenated list)
+ * @param photos  Camera photos to weave in; if empty, returns items unchanged.
+ * @param everyN  Insert a photo item approximately every N positions (default 10).
+ *                The first injection is at position everyN-1 (0-indexed) so the
+ *                feed always starts with real content before any camera photo.
+ *
+ * Injected items have ids `cam-<n>` where n is the sequential injection count
+ * (0-based), cycling through `photos` if there are more slots than photos.
+ */
+export function injectPhotos(
+  items: FeedItem[],
+  photos: CameraPhoto[],
+  everyN = 10,
+): FeedItem[] {
+  if (photos.length === 0) return items;
+  const out: FeedItem[] = [];
+  let injected = 0;
+  // We track the "output position" (out.length after each push) to decide when
+  // the next injection slot falls. We inject before appending the item at every
+  // everyN-th output position (1-indexed: positions everyN, 2*everyN, …).
+  for (const item of items) {
+    // If the next output index (0-based) is a multiple of everyN AND non-zero,
+    // inject a camera photo first.
+    if (out.length > 0 && out.length % everyN === 0) {
+      const photo = photos[injected % photos.length];
+      out.push({
+        kind: "photo",
+        id: `cam-${injected}`,
+        uri: photo.uri,
+        caption: "from your camera roll",
+      });
+      injected++;
+    }
+    out.push(item);
+  }
+  return out;
 }
 
 /**
