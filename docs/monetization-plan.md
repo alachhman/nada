@@ -143,6 +143,23 @@ one financial-wellness vendor or credit union for a co-brand pilot.
 
 ---
 
+## 6b. How the inspiration monetizes (it doesn't — and that's the lesson)
+
+The "initial inspiration" is a *category*, not a product: South Korea's "dopamine sites" (fake
+delivery, fake carts, virtual smoke breaks). Across the press coverage — Korea Times, SCMP, the LI
+Solutions teardown, the viral threads — **no monetization model is reported**; they're described as
+**free digital spaces**, indie/novelty stress-relief experiments. One teardown nails *why* free is
+load-bearing: *"On a real delivery app, the fee is what makes them stop… Here there's no order to
+second-guess, so the hesitation never arrives."* The **absence of money/transaction is the product.**
+
+Two takeaways for nada:
+1. **There's no business model to copy** — they went viral without one. Virality ≠ revenue; nada's
+   actual edge is *having* a respectful business model where they have none.
+2. **Never monetize inside the ritual.** Putting a price, fee, or real-purchase prompt into the
+   browse→cart→intercept flow would reintroduce exactly the friction/guilt the inspiration removes.
+   This is why the plan monetizes *around* the experience (subscription for depth, turn-savings-real,
+   cosmetics) and never *in* it.
+
 ## 7. The one-line strategy
 > **Free app that helps you not spend; `nada+` for people who want to go deeper; real money for nada
 > only when it helps you save real money. No ads, no tracking, no exceptions.**
