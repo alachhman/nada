@@ -20,6 +20,8 @@ export async function getRecentPhotos(limit = 8): Promise<CameraPhoto[]> {
   if (Platform.OS === "web") return [];
   try {
     // Dynamic import: resolved on native only; never bundled for web.
+    // NOTE: The SDK 56 Query API is iOS-first; on Android it may return [].
+    // The try/catch below makes this safe in both cases.
     const MediaLibrary = await import("expo-media-library");
     const { status } = await MediaLibrary.getPermissionsAsync();
     if (status !== "granted") return [];

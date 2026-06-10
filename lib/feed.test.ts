@@ -306,4 +306,23 @@ describe("injectPhotos", () => {
     const nonPhoto = result.filter((i) => i.kind !== "photo");
     expect(nonPhoto).toEqual(baseItems);
   });
+
+  it("startN offsets the first injected cam id", () => {
+    const photos = [makePhoto(0)];
+    const result = injectPhotos(generateFeed(0, 20), photos, 10, 5);
+    const photoItems = result.filter((i): i is FeedItem & { kind: "photo" } => i.kind === "photo");
+    expect(photoItems.length).toBeGreaterThan(0);
+    expect(photoItems[0].id).toBe("cam-5");
+  });
+
+  it("two sequential calls with increasing startN produce no duplicate cam ids", () => {
+    const photos = [makePhoto(0), makePhoto(1)];
+    const batch1 = injectPhotos(generateFeed(0, 20), photos, 10, 0);
+    const camCount1 = batch1.filter((i) => i.kind === "photo").length;
+    const batch2 = injectPhotos(generateFeed(20, 20), photos, 10, camCount1);
+    const allCamIds = [...batch1, ...batch2]
+      .filter((i) => i.kind === "photo")
+      .map((i) => i.id);
+    expect(new Set(allCamIds).size).toBe(allCamIds.length);
+  });
 });

@@ -49,6 +49,8 @@ export default function ScrollScreen() {
   const [items, setItems] = useState<FeedItem[]>(() => generateFeed(0, 18, prefs)); // photos injected after mount via effect
   const listRef = useRef<FlatList<FeedItem>>(null);
   const loadingRef = useRef(false);
+  // Tracks next content-stream index (excludes injected cam-<n> photo items).
+  const nextContentIndexRef = useRef(18);
 
   // Swipe-up hint: visible on the first immersive card, hidden once scrolled.
   const [showSwipeHint, setShowSwipeHint] = useState(true);
@@ -92,10 +94,6 @@ export default function ScrollScreen() {
     }
   };
 
-  useEffect(() => {
-    loadingRef.current = false;
-  }, [items]);
-
   // Fetch camera-roll photos once when cameraRoll pref is enabled.
   // Web-safe: getRecentPhotos returns [] on web (no-op). Clear when disabled.
   useEffect(() => {
@@ -107,9 +105,11 @@ export default function ScrollScreen() {
   }, [prefs.cameraRoll]);
 
   // Re-seed the feed when content-affecting prefs change so edits apply immediately.
+  // Also re-runs when photos changes so enabling camera roll injects photos immediately.
   // Keyed on contentSig (not the prefs object) to avoid an infinite loop.
   useEffect(() => {
     setItems(injectPhotos(generateFeed(0, 18, prefs), photos));
+    nextContentIndexRef.current = 18;
     // Best-effort scroll to top
     listRef.current?.scrollToOffset({ offset: 0, animated: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -118,9 +118,14 @@ export default function ScrollScreen() {
   const loadMore = () => {
     if (loadingRef.current) return;
     loadingRef.current = true;
+    const start = nextContentIndexRef.current;
+    nextContentIndexRef.current = start + 12;
+    const base = generateFeed(start, 12, prefs);
     setItems((prev) => {
-      const newBatch = injectPhotos(generateFeed(prev.length, 12, prefs), photos);
-      return [...prev, ...newBatch];
+      const existingCam = prev.filter((i) => i.kind === "photo").length;
+      const next = [...prev, ...injectPhotos(base, photos, 10, existingCam)];
+      loadingRef.current = false;
+      return next;
     });
   };
 
@@ -320,8 +325,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: tokens.space.lg,
     paddingTop: tokens.space.md,
     paddingBottom: tokens.space.xxxl,
-  },
-  separator: {
-    height: tokens.space.lg,
   },
 });

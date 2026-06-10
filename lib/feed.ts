@@ -360,18 +360,22 @@ function getPoolItem(
  * @param everyN  Insert a photo item approximately every N positions (default 10).
  *                The first injection is at position everyN-1 (0-indexed) so the
  *                feed always starts with real content before any camera photo.
+ * @param startN  Starting value for the cam-id counter (default 0). Pass the
+ *                total number of cam items already in the list to ensure ids are
+ *                globally unique across paginated batches (cam-0, cam-1, …).
  *
- * Injected items have ids `cam-<n>` where n is the sequential injection count
- * (0-based), cycling through `photos` if there are more slots than photos.
+ * Injected items have ids `cam-<n>` where n starts at startN and increments,
+ * cycling through `photos` if there are more slots than photos.
  */
 export function injectPhotos(
   items: FeedItem[],
   photos: CameraPhoto[],
   everyN = 10,
+  startN = 0,
 ): FeedItem[] {
   if (photos.length === 0) return items;
   const out: FeedItem[] = [];
-  let injected = 0;
+  let injected = startN;
   // We track the "output position" (out.length after each push) to decide when
   // the next injection slot falls. We inject before appending the item at every
   // everyN-th output position (1-indexed: positions everyN, 2*everyN, …).

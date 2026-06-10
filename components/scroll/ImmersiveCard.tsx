@@ -64,7 +64,7 @@ function useKenBurns() {
 /** Bottom-anchored gradient scrim via stacked Views (no extra dep). */
 function BottomScrim() {
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+    <View style={[StyleSheet.absoluteFill, { flexDirection: "column" }]} pointerEvents="none">
       <View style={[styles.scrimBand, { height: "60%", backgroundColor: "rgba(13,15,18,0.0)" }]} />
       <View style={[styles.scrimBand, { height: "20%", backgroundColor: "rgba(13,15,18,0.22)" }]} />
       <View style={[styles.scrimBand, { height: "12%", backgroundColor: "rgba(13,15,18,0.46)" }]} />
