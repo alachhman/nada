@@ -1,14 +1,16 @@
-import { useEffect, useRef, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { FlatList, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 import { FeedCard } from "@/components/scroll/FeedCard";
 import { NadaInterstitial } from "@/components/scroll/NadaInterstitial";
 import { ReclaimSummary } from "@/components/scroll/ReclaimSummary";
 import { generateFeed, type FeedItem } from "@/lib/feed";
 import { tokens } from "@/lib/theme";
 import { useScroll } from "@/components/providers/ScrollProvider";
+import { useFeedPrefs } from "@/components/providers/FeedPrefsProvider";
 
 const SEPARATOR_STYLE = { height: tokens.space.lg };
 function Separator() {
@@ -18,8 +20,17 @@ function Separator() {
 export default function ScrollScreen() {
   const router = useRouter();
   const { addReclaimed } = useScroll();
+  const { prefs } = useFeedPrefs();
 
-  const [items, setItems] = useState<FeedItem[]>(() => generateFeed(0, 18));
+  // Stable signature of the content-affecting prefs (postTypes + photoThemes).
+  // Keying the re-seed effect on this string avoids re-running on layout/cameraRoll changes.
+  const contentSig = useMemo(
+    () => JSON.stringify({ postTypes: prefs.postTypes, photoThemes: prefs.photoThemes }),
+    [prefs.postTypes, prefs.photoThemes],
+  );
+
+  const [items, setItems] = useState<FeedItem[]>(() => generateFeed(0, 18, prefs));
+  const listRef = useRef<FlatList<FeedItem>>(null);
   const loadingRef = useRef(false);
 
   const startRef = useRef(Date.now());
@@ -65,10 +76,19 @@ export default function ScrollScreen() {
     loadingRef.current = false;
   }, [items]);
 
+  // Re-seed the feed when content-affecting prefs change so edits apply immediately.
+  // Keyed on contentSig (not the prefs object) to avoid an infinite loop.
+  useEffect(() => {
+    setItems(generateFeed(0, 18, prefs));
+    // Best-effort scroll to top
+    listRef.current?.scrollToOffset({ offset: 0, animated: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contentSig]);
+
   const loadMore = () => {
     if (loadingRef.current) return;
     loadingRef.current = true;
-    setItems((prev) => [...prev, ...generateFeed(prev.length, 12)]);
+    setItems((prev) => [...prev, ...generateFeed(prev.length, 12, prefs)]);
   };
 
   return (
@@ -84,10 +104,24 @@ export default function ScrollScreen() {
           <Ionicons name="chevron-down" size={22} color={tokens.colors.ink} />
         </Pressable>
         <Text style={styles.topLabel}>you're all caught up forever</Text>
-        <View style={styles.closeButton} />
+        <Pressable
+          onPress={() => {
+            if (Platform.OS !== "web") {
+              void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }
+            router.push("/scroll/customize");
+          }}
+          style={styles.closeButton}
+          accessibilityRole="button"
+          accessibilityLabel="Customize feed"
+          hitSlop={8}
+        >
+          <Ionicons name="options-outline" size={20} color={tokens.colors.ink} />
+        </Pressable>
       </View>
 
       <FlatList
+        ref={listRef}
         data={items}
         keyExtractor={(it) => it.id}
         renderItem={({ item }) =>
