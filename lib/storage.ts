@@ -27,7 +27,12 @@ export function recordIntercept(
     streak: nextStreak(state, today),
     lastActiveDate: today,
     saves: [
-      { items: cart.map((c) => c.name), amount, timestamp: nowMs },
+      {
+        items: cart.map((c) => c.name),
+        amount,
+        timestamp: nowMs,
+        itemCount: cart.reduce((s, i) => s + i.qty, 0),
+      },
       ...state.saves,
     ].slice(0, 50),
   };

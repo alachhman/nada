@@ -69,4 +69,19 @@ describe("recordIntercept", () => {
     const next = recordIntercept(INITIAL_STATE, cart, "2026-06-08", 1234567890);
     expect(next.saves[0].timestamp).toBe(1234567890);
   });
+
+  it("records itemCount as the sum of cart qty", () => {
+    const next = recordIntercept(INITIAL_STATE, cart, "2026-06-08");
+    // cart has qty:1 + qty:1 → 2
+    expect(next.saves[0].itemCount).toBe(2);
+  });
+
+  it("records itemCount correctly when a line has qty > 1", () => {
+    const multiCart: CartItem[] = [
+      { id: "a", name: "Hoodie", price: 74, image: "", qty: 3 },
+      { id: "b", name: "Cap", price: 30, image: "", qty: 1 },
+    ];
+    const next = recordIntercept(INITIAL_STATE, multiCart, "2026-06-08");
+    expect(next.saves[0].itemCount).toBe(4);
+  });
 });

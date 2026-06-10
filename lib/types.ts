@@ -27,6 +27,7 @@ export interface SaveEntry {
   items: string[]; // product names
   amount: number; // USD intercepted
   timestamp: number;
+  itemCount?: number; // total quantity intercepted (optional → backward-safe)
 }
 
 export interface NadaState {
