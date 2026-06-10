@@ -10,7 +10,8 @@
     "updates": {
       "enabled": true,
       "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/10d992df-8df3-4107-a524-f0f16ba7ad93"
     },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -48,6 +49,13 @@
           "backgroundColor": "#F7F4EE"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "10d992df-8df3-4107-a524-f0f16ba7ad93"
+      }
+    },
+    "owner": "antneee"
   }
 }
