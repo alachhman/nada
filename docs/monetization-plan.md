@@ -146,9 +146,12 @@ one financial-wellness vendor or credit union for a co-brand pilot.
 ## 6b. How the inspiration monetizes (it doesn't — and that's the lesson)
 
 The "initial inspiration" is a *category*, not a product: South Korea's "dopamine sites" (fake
-delivery, fake carts, virtual smoke breaks). Across the press coverage — Korea Times, SCMP, the LI
-Solutions teardown, the viral threads — **no monetization model is reported**; they're described as
-**free digital spaces**, indie/novelty stress-relief experiments. One teardown nails *why* free is
+delivery, fake carts, virtual smoke breaks). Deep research (see
+[korean-dopamine-websites-deep-research.md](context/korean-dopamine-websites-deep-research.md))
+confirms the whole category is **three solo-built indie sites** monetized with **Google AdSense or
+nothing at all** (publisher tags verified in page source; the third site publicly refuses
+monetization). No premium tiers, no donations, no B2B — free digital spaces, hundreds to low
+tens-of-thousands of daily users. One teardown nails *why* free is
 load-bearing: *"On a real delivery app, the fee is what makes them stop… Here there's no order to
 second-guess, so the hesitation never arrives."* The **absence of money/transaction is the product.**
 
