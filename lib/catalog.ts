@@ -5,7 +5,7 @@ function img(id: string) {
 }
 
 export const CATALOG: Product[] = [
-  { id: "retro-runner", name: "Retro Runner Sneakers", category: "Apparel", price: 129, image: img("photo-1542291026-7eec264c27ff"), rating: 5, reviewCount: 2481, reviews: [{ author: "Jess M.", rating: 5, text: "Obsessed. Wear them daily." }, { author: "Devon", rating: 4, text: "Run a half size small but gorgeous." }] },
+  { id: "retro-runner", name: "Retro Runner Sneakers", category: "Apparel", price: 129, image: img("photo-1560769629-975ec94e6a86"), rating: 5, reviewCount: 2481, reviews: [{ author: "Jess M.", rating: 5, text: "Obsessed. Wear them daily." }, { author: "Devon", rating: 4, text: "Run a half size small but gorgeous." }] },
   { id: "linen-hoodie", name: "Heavyweight Hoodie", category: "Apparel", price: 74, image: img("photo-1556821840-3a63f95609a7"), rating: 5, reviewCount: 932, reviews: [{ author: "Sam P.", rating: 5, text: "Softest thing I own." }] },
   { id: "arc-lamp", name: "Arc Table Lamp", category: "Home", price: 58, image: img("photo-1507473885765-e6ed057f782c"), rating: 4, reviewCount: 410, reviews: [{ author: "Lena", rating: 4, text: "Warm light, looks pricey." }] },
   { id: "ceramic-mug", name: "Stoneware Mug Set", category: "Home", price: 22, image: img("photo-1514228742587-6b1558fcca3d"), rating: 5, reviewCount: 1203, reviews: [{ author: "Tomas", rating: 5, text: "Perfect weight, keeps heat." }] },
