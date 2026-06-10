@@ -68,11 +68,21 @@ export default function TrackingScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Status beats driven off progress on the JS thread.
+  // Status beats. Compute the label on the JS thread (statusForProgress/statusLabel
+  // are non-worklet functions — calling them inside the worklet crashes Hermes on
+  // native). The worklet only reads progress.value and hops to JS via runOnJS.
+  const lastStatusRef = useRef<string>(statusLabel(statusForProgress(0)));
+  const applyStatus = (p: number) => {
+    const label = statusLabel(statusForProgress(p));
+    if (label !== lastStatusRef.current) {
+      lastStatusRef.current = label;
+      setStatus(label);
+    }
+  };
   useAnimatedReaction(
-    () => statusForProgress(progress.value),
-    (s, prev) => {
-      if (s !== prev) runOnJS(setStatus)(statusLabel(s));
+    () => progress.value,
+    (current) => {
+      runOnJS(applyStatus)(current);
     },
   );
 

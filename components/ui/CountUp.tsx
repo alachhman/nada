@@ -63,10 +63,14 @@ export function CountUp({ value, durationMs = 1100, reduceMotion, style }: Count
     });
   }, [value, durationMs, snap, progress]);
 
+  // IMPORTANT: format on the JS thread, never inside the worklet. usd() is a
+  // non-worklet function (Intl.NumberFormat); calling it on the UI thread throws
+  // and hard-crashes Hermes on native (react-native-web silently tolerates it).
+  const applyValue = (n: number) => setDisplay(usd(n));
   useAnimatedReaction(
     () => progress.value,
     (current) => {
-      runOnJS(setDisplay)(usd(current));
+      runOnJS(applyValue)(current);
     },
   );
 
