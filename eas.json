@@ -29,6 +29,15 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "ascApiKeyPath": "credentials/AuthKey_YD46534G7H.p8",
+        "ascApiKeyId": "YD46534G7H",
+        "ascApiKeyIssuerId": "eff59723-4acf-488a-992d-1bb68bfafb28",
+        "appleTeamId": "9H2BW5FLRV",
+        "sku": "nada-ios-001",
+        "language": "en-US"
+      }
+    }
   }
 }
