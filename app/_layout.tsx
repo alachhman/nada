@@ -7,20 +7,23 @@ import { NadaProvider } from '@/components/providers/NadaProvider';
 import { ScrollProvider } from '@/components/providers/ScrollProvider';
 import { BreakProvider } from '@/components/providers/BreakProvider';
 import { CartProvider } from '@/components/providers/CartProvider';
+import { PremiumProvider } from '@/components/providers/PremiumProvider';
 
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <NadaProvider>
-          <ScrollProvider>
-            <BreakProvider>
-              <CartProvider>
-                <Stack screenOptions={{ headerShown: false }} />
-              </CartProvider>
-            </BreakProvider>
-          </ScrollProvider>
-        </NadaProvider>
+        <PremiumProvider>
+          <NadaProvider>
+            <ScrollProvider>
+              <BreakProvider>
+                <CartProvider>
+                  <Stack screenOptions={{ headerShown: false }} />
+                </CartProvider>
+              </BreakProvider>
+            </ScrollProvider>
+          </NadaProvider>
+        </PremiumProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

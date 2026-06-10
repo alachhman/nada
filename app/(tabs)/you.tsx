@@ -13,6 +13,8 @@ import { StatPills } from "@/components/you/StatPills";
 import { SavesFeed } from "@/components/you/SavesFeed";
 import { ReclaimedBlock } from "@/components/you/ReclaimedBlock";
 import { BreaksBlock } from "@/components/you/BreaksBlock";
+import { InsightsTeaser } from "@/components/you/InsightsTeaser";
+import { MONETIZATION_ENABLED } from "@/lib/flags";
 
 const STAGGER = 80;
 
@@ -67,6 +69,16 @@ export default function YouScreen() {
             <BreaksBlock />
           </View>
         </Reveal>
+
+        {/* Insights teaser — additive, only when monetization is enabled.
+            Flag-off = today's UX exactly. */}
+        {MONETIZATION_ENABLED && (
+          <Reveal delay={nextDelay()}>
+            <View style={styles.insightsSection}>
+              <InsightsTeaser />
+            </View>
+          </Reveal>
+        )}
 
         {/* Rituals section */}
         <Reveal delay={nextDelay()}>
@@ -151,6 +163,12 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: "row",
     gap: tokens.space.md,
+    paddingHorizontal: tokens.space.xl,
+    marginTop: tokens.space.xxl,
+  },
+
+  /* Insights teaser */
+  insightsSection: {
     paddingHorizontal: tokens.space.xl,
     marginTop: tokens.space.xxl,
   },
