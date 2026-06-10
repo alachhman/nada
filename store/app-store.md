@@ -56,8 +56,8 @@ No account. No ads. No tracking. Everything stays on your device.
 you spent nada. nice work.
 ```
 
-**Support URL:** your GitHub repo page (or any page you control)
-**Privacy Policy URL:** host `PRIVACY.md` (e.g. GitHub: the file's blob URL works) 🔑
+**Support URL:** https://github.com/alachhman/nada
+**Privacy Policy URL:** https://github.com/alachhman/nada/blob/master/PRIVACY.md
 
 **App Privacy questionnaire:** select **"Data Not Collected"** for everything — the app
 has no accounts, no analytics, no tracking, no third-party SDKs that collect data.
