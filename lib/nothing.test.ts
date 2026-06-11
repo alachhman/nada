@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { nothingStageFor, itemsKeptOut, NOTHING_STAGES } from "@/lib/nothing";
+import { nothingStageFor, itemsKeptOut, weightKeptOut, NOTHING_STAGES } from "@/lib/nothing";
 import type { SaveEntry } from "@/lib/types";
 
 const MS_2MIN = 2 * 60 * 1000;
@@ -106,5 +106,48 @@ describe("itemsKeptOut", () => {
       { items: ["C", "D"], amount: 90, timestamp: 1, itemCount: 2 },
     ];
     expect(itemsKeptOut(saves)).toBe(6);
+  });
+});
+
+describe("weightKeptOut", () => {
+  it("returns 0 for empty saves", () => {
+    expect(weightKeptOut([])).toBe(0);
+  });
+
+  it("sums weightLb across saves with weight", () => {
+    const saves: SaveEntry[] = [
+      { items: ["Shoes"], amount: 129, timestamp: 1, itemCount: 2, weightLb: 3.0 },
+      { items: ["Hoodie"], amount: 74, timestamp: 2, itemCount: 1, weightLb: 1.5 },
+    ];
+    expect(weightKeptOut(saves)).toBe(4.5);
+  });
+
+  it("treats missing weightLb as 0 (legacy entry)", () => {
+    const saves: SaveEntry[] = [
+      // new entry
+      { items: ["Lamp"], amount: 80, timestamp: 2, itemCount: 1, weightLb: 6.2 },
+      // legacy entry: no weightLb
+      { items: ["Book"], amount: 20, timestamp: 1 },
+    ];
+    expect(weightKeptOut(saves)).toBe(6.2);
+  });
+
+  it("mixes entries with and without weightLb correctly", () => {
+    const saves: SaveEntry[] = [
+      { items: ["A"], amount: 50, timestamp: 3, itemCount: 3, weightLb: 2.1 },
+      { items: ["B"], amount: 70, timestamp: 2, itemCount: 1 }, // legacy
+      { items: ["C", "D"], amount: 90, timestamp: 1, itemCount: 2, weightLb: 12 },
+    ];
+    // 2.1 + 0 + 12 = 14.1
+    expect(weightKeptOut(saves)).toBe(14.1);
+  });
+
+  it("rounds to 1 decimal", () => {
+    const saves: SaveEntry[] = [
+      { items: ["X"], amount: 10, timestamp: 1, weightLb: 1.23 },
+      { items: ["Y"], amount: 10, timestamp: 2, weightLb: 1.08 },
+    ];
+    // 1.23 + 1.08 = 2.31 → 2.3
+    expect(weightKeptOut(saves)).toBe(2.3);
   });
 });

@@ -6,6 +6,11 @@ function cartTotal(cart: CartItem[]): number {
   return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 }
 
+function cartWeightLb(cart: CartItem[]): number {
+  const total = cart.reduce((sum, item) => sum + (item.weightLb ?? 0) * item.qty, 0);
+  return Math.round(total * 10) / 10;
+}
+
 function nextStreak(state: NadaState, today: string): number {
   if (!state.lastActiveDate) return 1;
   if (isSameDay(state.lastActiveDate, today)) return state.streak;
@@ -32,6 +37,7 @@ export function recordIntercept(
         amount,
         timestamp: nowMs,
         itemCount: cart.reduce((s, i) => s + i.qty, 0),
+        weightLb: cartWeightLb(cart),
       },
       ...state.saves,
     ].slice(0, 50),

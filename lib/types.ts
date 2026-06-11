@@ -13,6 +13,8 @@ export interface Product {
   rating: number; // average, 1-5
   reviewCount: number;
   reviews: Review[];
+  weightLb: number; // realistic shipping weight in lb
+  dodgeLine: string; // witty quantified "what you'd be dodging" gag
 }
 
 export interface CartItem {
@@ -21,6 +23,7 @@ export interface CartItem {
   price: number;
   image: string;
   qty: number;
+  weightLb?: number; // snapshotted from product at add-to-cart time (optional → backward-safe)
 }
 
 export interface SaveEntry {
@@ -28,6 +31,7 @@ export interface SaveEntry {
   amount: number; // USD intercepted
   timestamp: number;
   itemCount?: number; // total quantity intercepted (optional → backward-safe)
+  weightLb?: number; // total weight intercepted in lb (optional → backward-safe)
 }
 
 export interface NadaState {

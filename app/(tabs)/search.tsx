@@ -6,10 +6,32 @@ import { Ionicons } from "@expo/vector-icons";
 import { MotiView } from "moti";
 import { tokens } from "@/lib/theme";
 import { CATALOG } from "@/lib/catalog";
+import { productAt } from "@/lib/catalogGen";
 import { SearchBar } from "@/components/shop/SearchBar";
 import { CategoryChips, CATEGORIES, type Category } from "@/components/shop/CategoryChips";
 import { ProductCard } from "@/components/shop/ProductCard";
 import type { Product } from "@/lib/types";
+
+// ---------------------------------------------------------------------------
+// Generated product search — scan productAt(0..1999) for query matches.
+// Synchronous, memoized per (query, category) by the outer useMemo.
+// Only runs when query.length >= 2.
+// ---------------------------------------------------------------------------
+const GEN_SCAN_LIMIT = 2000;
+const COMBINED_CAP = 50;
+
+function searchGenerated(q: string, category: Category): Product[] {
+  const results: Product[] = [];
+  for (let i = 0; i < GEN_SCAN_LIMIT; i++) {
+    const p = productAt(i);
+    const matchesCategory = category === "All" || p.category === category;
+    if (!matchesCategory) continue;
+    if (p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)) {
+      results.push(p);
+    }
+  }
+  return results;
+}
 
 function Grid({ products }: { products: Product[] }) {
   const rows: Product[][] = [];
@@ -45,7 +67,9 @@ export default function SearchScreen() {
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return CATALOG.filter((p) => {
+
+    // Curated matches (always scanned, small set)
+    const curated = CATALOG.filter((p) => {
       const matchesCategory = category === "All" || p.category === category;
       if (!matchesCategory) return false;
       if (!q) return true;
@@ -54,6 +78,15 @@ export default function SearchScreen() {
         p.category.toLowerCase().includes(q)
       );
     });
+
+    // Generated matches — only when query has >= 2 chars
+    if (q.length >= 2) {
+      const gen = searchGenerated(q, category);
+      const combined = [...curated, ...gen];
+      return combined.slice(0, COMBINED_CAP);
+    }
+
+    return curated;
   }, [query, category]);
 
   const showEmpty = results.length === 0;

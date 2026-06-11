@@ -44,7 +44,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setItems((prev) => {
       const found = prev.find((i) => i.id === p.id);
       if (found) return prev.map((i) => (i.id === p.id ? { ...i, qty: i.qty + 1 } : i));
-      return [...prev, { id: p.id, name: p.name, price: p.price, image: p.image, qty: 1 }];
+      return [
+        ...prev,
+        { id: p.id, name: p.name, price: p.price, image: p.image, qty: 1, weightLb: p.weightLb },
+      ];
     });
 
   const remove = (id: string) => setItems((prev) => prev.filter((i) => i.id !== id));
