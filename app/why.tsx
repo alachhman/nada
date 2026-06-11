@@ -28,6 +28,15 @@ const PARAS: Para[] = [
   },
 ];
 
+type Section = { heading: string; body: string };
+
+const SECTIONS: Section[] = [
+  {
+    heading: 'the "right now" feed',
+    body: 'if you opt in (it\'s off by default), your saves appear to others as exactly four anonymous facts: the ritual, the rounded amount, your region word (from your timezone — never gps, never your address), and a timestamp. no ids, no accounts, nothing that can be traced back to you. turn it off any time and nothing leaves your phone.',
+  },
+];
+
 export default function WhyScreen() {
   let stagger = 0;
   const nextDelay = () => stagger++ * STAGGER;
@@ -60,6 +69,13 @@ export default function WhyScreen() {
         {PARAS.map((p) => (
           <Reveal key={p.body.slice(0, 24)} delay={nextDelay()}>
             <Text style={styles.body}>{p.body}</Text>
+          </Reveal>
+        ))}
+
+        {SECTIONS.map((s) => (
+          <Reveal key={s.heading} delay={nextDelay()}>
+            <Text style={styles.sectionHeading}>{s.heading}</Text>
+            <Text style={styles.body}>{s.body}</Text>
           </Reveal>
         ))}
 
@@ -114,6 +130,13 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: tokens.colors.ink,
     marginBottom: tokens.space.xl,
+  },
+  sectionHeading: {
+    fontSize: 15.5,
+    fontWeight: "800",
+    color: tokens.colors.ink,
+    marginBottom: tokens.space.sm,
+    letterSpacing: -0.2,
   },
   footer: {
     marginTop: tokens.space.lg,

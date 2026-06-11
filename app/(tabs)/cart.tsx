@@ -7,14 +7,18 @@ import { tokens } from "@/lib/theme";
 import { usd } from "@/lib/format";
 import { useCart } from "@/components/providers/CartProvider";
 import { useNada } from "@/components/providers/NadaProvider";
+import { usePresence } from "@/components/providers/PresenceProvider";
 import { PillButton } from "@/components/ui/PillButton";
 import { CartLine } from "@/components/cart/CartLine";
 import { InterceptOverlay } from "@/components/intercept/InterceptOverlay";
+import { OTHERS_LINE_THRESHOLD } from "@/lib/presence";
+import { PRESENCE_ENABLED } from "@/lib/flags";
 
 export default function CartScreen() {
   const router = useRouter();
   const { items, total, clear } = useCart();
   const { intercept } = useNada();
+  const { enabled, post, todayStats } = usePresence();
   const [overlay, setOverlay] = useState<{ amount: number; itemCount: number } | null>(null);
 
   const checkout = () => {
@@ -23,6 +27,7 @@ export default function CartScreen() {
     // Capture saved amount + total quantity BEFORE clearing — clear() would zero them out.
     const saved = intercept(items);
     const itemCount = items.reduce((sum, item) => sum + item.qty, 0);
+    post("shop", saved);
     clear();
     setOverlay({ amount: saved, itemCount });
   };
@@ -69,7 +74,16 @@ export default function CartScreen() {
       )}
 
       {overlay ? (
-        <InterceptOverlay amount={overlay.amount} itemCount={overlay.itemCount} onClose={handleClose} />
+        <InterceptOverlay
+          amount={overlay.amount}
+          itemCount={overlay.itemCount}
+          othersToday={
+            enabled && PRESENCE_ENABLED && todayStats && todayStats.count >= OTHERS_LINE_THRESHOLD
+              ? todayStats.count
+              : undefined
+          }
+          onClose={handleClose}
+        />
       ) : null}
     </SafeAreaView>
   );
