@@ -13,6 +13,8 @@ export interface Product {
   rating: number; // average, 1-5
   reviewCount: number;
   reviews: Review[];
+  weightLb: number; // realistic shipping weight in lb
+  dodgeLine: string; // witty quantified "what you'd be dodging" gag
 }
 
 export interface CartItem {
