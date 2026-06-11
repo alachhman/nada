@@ -6,6 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { MotiView } from "moti";
 import { tokens } from "@/lib/theme";
 import { usd } from "@/lib/format";
+import { formatWeight, hoursOfWork, WORK_WAGE } from "@/lib/dodge";
 import { getProduct } from "@/lib/catalog";
 import { RatingStars } from "@/components/shop/RatingStars";
 import { ReviewBlock } from "@/components/product/ReviewBlock";
@@ -109,6 +110,13 @@ export default function ProductScreen() {
           {/* Price */}
           <Text style={styles.price}>{usd(product.price)}</Text>
 
+          {/* Dodge metrics */}
+          <View style={styles.dodgeBlock}>
+            <Text style={styles.dodgeLine}>⚖ {formatWeight(product.weightLb)} of future clutter</Text>
+            <Text style={styles.dodgeLine}>≈ {hoursOfWork(product.price)} hrs of work at ${WORK_WAGE}/hr</Text>
+            <Text style={styles.dodgeLine}>{product.dodgeLine}</Text>
+          </View>
+
           {/* About */}
           <View style={styles.aboutBlock}>
             <Text style={styles.aboutHeading}>About</Text>
@@ -202,6 +210,21 @@ const styles = StyleSheet.create({
     color: tokens.colors.ink,
     letterSpacing: -0.5,
     marginTop: tokens.space.xs,
+  },
+  dodgeBlock: {
+    marginTop: tokens.space.sm,
+    gap: tokens.space.xs,
+    paddingVertical: tokens.space.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: tokens.colors.hairline,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: tokens.colors.hairline,
+  },
+  dodgeLine: {
+    fontSize: 13,
+    fontWeight: "400",
+    color: tokens.colors.muted,
+    lineHeight: 19,
   },
   aboutBlock: {
     marginTop: tokens.space.md,

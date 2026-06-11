@@ -12,6 +12,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { tokens } from "@/lib/theme";
+import { formatWeight } from "@/lib/dodge";
 import { CountUp } from "@/components/ui/CountUp";
 import { PillButton } from "@/components/ui/PillButton";
 
@@ -20,6 +21,7 @@ type Phase = "processing" | "done";
 interface InterceptOverlayProps {
   amount: number;
   itemCount?: number;
+  weightLb?: number;
   processingMs?: number;
   othersToday?: number;
   onClose: () => void;
@@ -38,7 +40,7 @@ export function useInterceptPhase(processingMs: number): Phase {
   return phase;
 }
 
-export function InterceptOverlay({ amount, itemCount, processingMs = 2000, othersToday, onClose }: InterceptOverlayProps) {
+export function InterceptOverlay({ amount, itemCount, weightLb, processingMs = 2000, othersToday, onClose }: InterceptOverlayProps) {
   const phase = useInterceptPhase(processingMs);
 
   // Light haptic when the processing theater begins.
@@ -49,7 +51,7 @@ export function InterceptOverlay({ amount, itemCount, processingMs = 2000, other
   return (
     <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
       <View style={styles.backdrop}>
-        {phase === "processing" ? <Processing /> : <Reveal amount={amount} itemCount={itemCount} othersToday={othersToday} onClose={onClose} />}
+        {phase === "processing" ? <Processing /> : <Reveal amount={amount} itemCount={itemCount} weightLb={weightLb} othersToday={othersToday} onClose={onClose} />}
       </View>
     </Modal>
   );
@@ -84,7 +86,7 @@ function Processing() {
 
 /* ---------- Done / reveal phase ---------- */
 
-function Reveal({ amount, itemCount, othersToday, onClose }: { amount: number; itemCount?: number; othersToday?: number; onClose: () => void }) {
+function Reveal({ amount, itemCount, weightLb, othersToday, onClose }: { amount: number; itemCount?: number; weightLb?: number; othersToday?: number; onClose: () => void }) {
   const { width, height } = useWindowDimensions();
 
   // Glow + emblem spring-in.
@@ -142,7 +144,7 @@ function Reveal({ amount, itemCount, othersToday, onClose }: { amount: number; i
         </Text>
         {itemCount != null && itemCount > 0 ? (
           <Text style={styles.keptOut}>
-            {itemCount} thing{itemCount === 1 ? "" : "s"} kept out of your house · 0 boxes headed to your door
+            {itemCount} thing{itemCount === 1 ? "" : "s"}{weightLb != null && weightLb > 0 ? ` · ${formatWeight(weightLb)}` : ""} kept out of your house · 0 boxes headed to your door
           </Text>
         ) : null}
         {othersToday != null && (

@@ -5,6 +5,7 @@ import * as Haptics from "expo-haptics";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import { tokens } from "@/lib/theme";
 import { usd } from "@/lib/format";
+import { formatWeight } from "@/lib/dodge";
 import type { Product } from "@/lib/types";
 import { RatingStars } from "./RatingStars";
 
@@ -74,7 +75,10 @@ export function ProductCard({ product, layout = "grid" }: ProductCardProps) {
             {product.name}
           </Text>
           <RatingStars rating={product.rating} reviewCount={product.reviewCount} />
-          <Text style={styles.price}>{usd(product.price)}</Text>
+          <View style={styles.priceRow}>
+            <Text style={styles.price}>{usd(product.price)}</Text>
+            <Text style={styles.weightChip}>{formatWeight(product.weightLb)}</Text>
+          </View>
         </View>
       </Pressable>
     </Animated.View>
@@ -128,10 +132,20 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     minHeight: 36,
   },
+  priceRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    justifyContent: "space-between",
+    marginTop: 1,
+  },
   price: {
     fontSize: 17,
     fontWeight: "800",
     color: tokens.colors.ink,
-    marginTop: 1,
+  },
+  weightChip: {
+    fontSize: 11,
+    fontWeight: "500",
+    color: tokens.colors.muted,
   },
 });

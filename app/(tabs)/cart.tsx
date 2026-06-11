@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { tokens } from "@/lib/theme";
 import { usd } from "@/lib/format";
+import { cartWeight, formatWeight } from "@/lib/dodge";
 import { useCart } from "@/components/providers/CartProvider";
 import { useNada } from "@/components/providers/NadaProvider";
 import { usePresence } from "@/components/providers/PresenceProvider";
@@ -19,17 +20,18 @@ export default function CartScreen() {
   const { items, total, clear } = useCart();
   const { intercept } = useNada();
   const { enabled, post, todayStats } = usePresence();
-  const [overlay, setOverlay] = useState<{ amount: number; itemCount: number } | null>(null);
+  const [overlay, setOverlay] = useState<{ amount: number; itemCount: number; weightLb: number } | null>(null);
 
   const checkout = () => {
     if (items.length === 0) return;
     if (Platform.OS !== "web") void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    // Capture saved amount + total quantity BEFORE clearing — clear() would zero them out.
+    // Capture saved amount + total quantity + weight BEFORE clearing — clear() would zero them out.
     const saved = intercept(items);
     const itemCount = items.reduce((sum, item) => sum + item.qty, 0);
+    const weight = cartWeight(items, (id) => items.find((i) => i.id === id)?.weightLb);
     post("shop", saved);
     clear();
-    setOverlay({ amount: saved, itemCount });
+    setOverlay({ amount: saved, itemCount, weightLb: weight });
   };
 
   const handleClose = () => {
@@ -67,6 +69,12 @@ export default function CartScreen() {
               <Text style={styles.totalLabel}>Total</Text>
               <Text style={styles.totalValue}>{usd(total)}</Text>
             </View>
+            {(() => {
+              const w = cartWeight(items, (id) => items.find((i) => i.id === id)?.weightLb);
+              return w > 0 ? (
+                <Text style={styles.clutterRow}>total clutter: {formatWeight(w)}</Text>
+              ) : null;
+            })()}
             <PillButton label="Check out" onPress={checkout} />
             <Text style={styles.deadpan}>you know how this ends</Text>
           </View>
@@ -77,6 +85,7 @@ export default function CartScreen() {
         <InterceptOverlay
           amount={overlay.amount}
           itemCount={overlay.itemCount}
+          weightLb={overlay.weightLb > 0 ? overlay.weightLb : undefined}
           othersToday={
             enabled && PRESENCE_ENABLED && todayStats && todayStats.count >= OTHERS_LINE_THRESHOLD
               ? todayStats.count
@@ -151,6 +160,12 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "900",
     color: tokens.colors.ink,
+  },
+  clutterRow: {
+    fontSize: 12.5,
+    color: tokens.colors.muted,
+    textAlign: "right",
+    marginTop: -tokens.space.xs,
   },
   deadpan: {
     fontSize: 12.5,
