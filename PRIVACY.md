@@ -38,9 +38,10 @@ shared feed:
 
 1. **Ritual type** — which nada ritual was completed (e.g. shopping, food, doomscroll, smoke break).
 2. **Rounded dollar amount** — your intercepted amount, rounded to the nearest whole dollar.
-3. **Region word** — a coarse region label (e.g. "Northeast", "Pacific") derived entirely from
-   your device's selected timezone. GPS is never accessed. Your IP address is never retained or
-   logged by nada's server.
+3. **Region word** — a coarse city-level region word (e.g. "New York", "London", or simply
+   "somewhere") derived entirely from your device's selected timezone, never from GPS or your
+   IP address. The feed database stores no IP addresses; transient infrastructure request logs
+   are kept to the platform minimum and are never read, used, or linked to feed entries.
 4. **Timestamp** — the server time at which the event was received.
 
 No user identifiers, device identifiers, account IDs, or any other linkable information are
