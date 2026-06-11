@@ -14,7 +14,7 @@ import { SearchBar } from "@/components/shop/SearchBar";
 import { CategoryChips, type Category } from "@/components/shop/CategoryChips";
 import { DealCarousel } from "@/components/shop/DealCarousel";
 import { ProductCard } from "@/components/shop/ProductCard";
-import { AISLE_CATS } from "@/app/aisle";
+import { AISLE_CATS } from "@/lib/catalogAisle";
 import type { Product } from "@/lib/types";
 
 // First 24 generated products for the aisle preview — computed once at module level
