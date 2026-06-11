@@ -85,3 +85,12 @@ export function itemsKeptOut(saves: SaveEntry[]): number {
     0,
   );
 }
+
+/**
+ * Total weight kept out of the house across all saves, in lb, rounded to 1 decimal.
+ * Uses weightLb when present; legacy entries without it contribute 0.
+ */
+export function weightKeptOut(saves: SaveEntry[]): number {
+  const total = saves.reduce((sum, save) => sum + (save.weightLb ?? 0), 0);
+  return Math.round(total * 10) / 10;
+}
