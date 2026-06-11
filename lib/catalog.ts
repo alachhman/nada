@@ -1,4 +1,5 @@
 import type { Product } from "@/lib/types";
+import { productAt } from "@/lib/catalogGen";
 
 function img(id: string) {
   return `https://images.unsplash.com/${id}?auto=format&fit=crop&w=600&q=70`;
@@ -331,5 +332,11 @@ export const CATALOG: Product[] = [
 ];
 
 export function getProduct(id: string): Product | undefined {
+  if (id.startsWith("gen-")) {
+    const raw = id.slice(4);
+    const index = Number(raw);
+    if (!Number.isInteger(index) || index < 0 || raw === "") return undefined;
+    return productAt(index);
+  }
   return CATALOG.find((p) => p.id === id);
 }
