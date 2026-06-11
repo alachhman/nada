@@ -9,6 +9,7 @@ import { BreakProvider } from '@/components/providers/BreakProvider';
 import { CartProvider } from '@/components/providers/CartProvider';
 import { PremiumProvider } from '@/components/providers/PremiumProvider';
 import { FeedPrefsProvider } from '@/components/providers/FeedPrefsProvider';
+import { PresenceProvider } from '@/components/providers/PresenceProvider';
 
 export default function RootLayout() {
   return (
@@ -20,7 +21,9 @@ export default function RootLayout() {
               <BreakProvider>
                 <CartProvider>
                   <FeedPrefsProvider>
-                    <Stack screenOptions={{ headerShown: false }} />
+                    <PresenceProvider>
+                      <Stack screenOptions={{ headerShown: false }} />
+                    </PresenceProvider>
                   </FeedPrefsProvider>
                 </CartProvider>
               </BreakProvider>
