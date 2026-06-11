@@ -22,6 +22,7 @@ import { getRecentPhotos, type CameraPhoto } from "@/lib/cameraRoll";
 import { tokens } from "@/lib/theme";
 import { useScroll } from "@/components/providers/ScrollProvider";
 import { useFeedPrefs } from "@/components/providers/FeedPrefsProvider";
+import { usePresence } from "@/components/providers/PresenceProvider";
 
 const SEPARATOR_STYLE = { height: tokens.space.lg };
 function Separator() {
@@ -34,6 +35,7 @@ export default function ScrollScreen() {
   const { width, height } = useWindowDimensions();
   const { addReclaimed } = useScroll();
   const { prefs } = useFeedPrefs();
+  const { post } = usePresence();
   const immersive = prefs.layout === "immersive";
 
   // Stable signature of the content-affecting prefs (postTypes + photoThemes).
@@ -87,6 +89,7 @@ export default function ScrollScreen() {
     committedRef.current = true;
     if (elapsed >= 2) {
       addReclaimed(elapsed);
+      post("scroll");
       setSummary(elapsed);
     } else {
       // Nothing meaningful to log — just navigate back.

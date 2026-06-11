@@ -10,6 +10,7 @@ import { PillButton } from "@/components/ui/PillButton";
 import { BreathingCircle } from "@/components/break/BreathingCircle";
 import { BreakComplete } from "@/components/break/BreakComplete";
 import { useBreaks } from "@/components/providers/BreakProvider";
+import { usePresence } from "@/components/providers/PresenceProvider";
 
 type Phase = "setup" | "breaking" | "done";
 
@@ -31,6 +32,7 @@ function formatClock(totalSeconds: number): string {
 export default function BreakScreen() {
   const router = useRouter();
   const { recordBreak } = useBreaks();
+  const { post } = usePresence();
 
   const [phase, setPhase] = useState<Phase>("setup");
   const [minutes, setMinutes] = useState<number>(3);
@@ -80,6 +82,7 @@ export default function BreakScreen() {
     const clamped = Math.min(durationSecRef.current, Math.round(elapsed));
     setRecordedSeconds(clamped);
     recordBreak(clamped);
+    post("break");
     setPhase("done");
   };
 

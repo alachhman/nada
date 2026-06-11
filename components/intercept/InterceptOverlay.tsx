@@ -21,6 +21,7 @@ interface InterceptOverlayProps {
   amount: number;
   itemCount?: number;
   processingMs?: number;
+  othersToday?: number;
   onClose: () => void;
 }
 
@@ -37,7 +38,7 @@ export function useInterceptPhase(processingMs: number): Phase {
   return phase;
 }
 
-export function InterceptOverlay({ amount, itemCount, processingMs = 2000, onClose }: InterceptOverlayProps) {
+export function InterceptOverlay({ amount, itemCount, processingMs = 2000, othersToday, onClose }: InterceptOverlayProps) {
   const phase = useInterceptPhase(processingMs);
 
   // Light haptic when the processing theater begins.
@@ -48,7 +49,7 @@ export function InterceptOverlay({ amount, itemCount, processingMs = 2000, onClo
   return (
     <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
       <View style={styles.backdrop}>
-        {phase === "processing" ? <Processing /> : <Reveal amount={amount} itemCount={itemCount} onClose={onClose} />}
+        {phase === "processing" ? <Processing /> : <Reveal amount={amount} itemCount={itemCount} othersToday={othersToday} onClose={onClose} />}
       </View>
     </Modal>
   );
@@ -83,7 +84,7 @@ function Processing() {
 
 /* ---------- Done / reveal phase ---------- */
 
-function Reveal({ amount, itemCount, onClose }: { amount: number; itemCount?: number; onClose: () => void }) {
+function Reveal({ amount, itemCount, othersToday, onClose }: { amount: number; itemCount?: number; othersToday?: number; onClose: () => void }) {
   const { width, height } = useWindowDimensions();
 
   // Glow + emblem spring-in.
@@ -144,6 +145,11 @@ function Reveal({ amount, itemCount, onClose }: { amount: number; itemCount?: nu
             {itemCount} thing{itemCount === 1 ? "" : "s"} kept out of your house · 0 boxes headed to your door
           </Text>
         ) : null}
+        {othersToday != null && (
+          <Text style={styles.othersLine}>
+            you and {othersToday.toLocaleString()} others said no today
+          </Text>
+        )}
       </Animated.View>
 
       <Animated.View style={[styles.cta, textStyle]}>
@@ -337,6 +343,14 @@ const styles = StyleSheet.create({
     maxWidth: 320,
   },
   keptOut: {
+    marginTop: tokens.space.md,
+    fontSize: 12.5,
+    lineHeight: 18,
+    textAlign: "center",
+    color: "rgba(244,241,234,0.45)",
+    maxWidth: 320,
+  },
+  othersLine: {
     marginTop: tokens.space.md,
     fontSize: 12.5,
     lineHeight: 18,

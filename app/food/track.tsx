@@ -16,6 +16,7 @@ import type { CartItem } from "@/lib/types";
 import { statusForProgress, statusLabel } from "@/lib/courier";
 import { useFoodOrder } from "@/components/providers/FoodOrderProvider";
 import { useNada } from "@/components/providers/NadaProvider";
+import { usePresence } from "@/components/providers/PresenceProvider";
 import { CourierMap } from "@/components/food/CourierMap";
 import { CelebrationReveal } from "@/components/food/CelebrationReveal";
 import { Reveal } from "@/components/ui/Reveal";
@@ -26,6 +27,7 @@ export default function TrackingScreen() {
   const router = useRouter();
   const { items, total, restaurant, clear } = useFoodOrder();
   const { intercept } = useNada();
+  const { post } = usePresence();
 
   // Capture the order on mount so a later clear() doesn't blank the UI.
   const capturedRef = useRef<{ items: CartItem[]; total: number; name: string; etaMins: number } | null>(
@@ -104,6 +106,7 @@ export default function TrackingScreen() {
     finishedRef.current = true;
     // Capture BEFORE clear; saved must equal the order total.
     const amount = intercept(capturedRef.current.items);
+    post("food", amount);
     clear();
     setEta(0);
     setStatus(statusLabel(statusForProgress(1)));
