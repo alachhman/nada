@@ -14,7 +14,8 @@ import { SavesFeed } from "@/components/you/SavesFeed";
 import { ReclaimedBlock } from "@/components/you/ReclaimedBlock";
 import { BreaksBlock } from "@/components/you/BreaksBlock";
 import { InsightsTeaser } from "@/components/you/InsightsTeaser";
-import { MONETIZATION_ENABLED } from "@/lib/flags";
+import { MONETIZATION_ENABLED, PRESENCE_ENABLED } from "@/lib/flags";
+import { PresenceTicker } from "@/components/you/PresenceTicker";
 
 const STAGGER = 80;
 
@@ -61,6 +62,16 @@ export default function YouScreen() {
         <Reveal delay={nextDelay()}>
           <StatPills streak={state.streak} interceptCount={state.interceptCount} />
         </Reveal>
+
+        {/* Co-presence feed — additive, only when flag is on.
+            Flag-off = today's UX exactly (no wrapper rendered). */}
+        {PRESENCE_ENABLED && (
+          <Reveal delay={nextDelay()}>
+            <View style={styles.presenceSection}>
+              <PresenceTicker />
+            </View>
+          </Reveal>
+        )}
 
         {/* Reclaimed + Breaks two-up row */}
         <Reveal delay={nextDelay()}>
@@ -165,6 +176,12 @@ const styles = StyleSheet.create({
   },
   scroll: {
     paddingBottom: tokens.space.xxxl + tokens.space.xl,
+  },
+
+  /* Co-presence ticker */
+  presenceSection: {
+    paddingHorizontal: tokens.space.xl,
+    marginTop: tokens.space.xxl,
   },
 
   /* Reclaimed + Breaks two-up row */
