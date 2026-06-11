@@ -29,6 +29,7 @@ export function PresenceTicker() {
             value={enabled}
             onValueChange={setEnabled}
             trackColor={{ true: tokens.colors.positive }}
+            accessibilityLabel="share your saves anonymously"
           />
         </View>
         {!enabled ? (

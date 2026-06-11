@@ -76,7 +76,10 @@ export default function ScrollScreen() {
     return () => {
       if (!committedRef.current) {
         const elapsed = Math.round((Date.now() - startRef.current) / 1000);
-        if (elapsed >= 2) addReclaimed(elapsed);
+        if (elapsed >= 2) {
+          addReclaimed(elapsed);
+          post("scroll");
+        }
         committedRef.current = true;
       }
     };
