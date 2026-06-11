@@ -8,12 +8,18 @@ import { Reveal } from "@/components/ui/Reveal";
 import { tokens } from "@/lib/theme";
 import { usd } from "@/lib/format";
 import { CATALOG } from "@/lib/catalog";
+import { productAt } from "@/lib/catalogGen";
 import { useNada } from "@/components/providers/NadaProvider";
 import { SearchBar } from "@/components/shop/SearchBar";
 import { CategoryChips, type Category } from "@/components/shop/CategoryChips";
 import { DealCarousel } from "@/components/shop/DealCarousel";
 import { ProductCard } from "@/components/shop/ProductCard";
+import { AISLE_CATS } from "@/app/aisle";
 import type { Product } from "@/lib/types";
+
+// First 24 generated products for the aisle preview — computed once at module level
+// so the array is stable across renders (no useMemo needed for a constant).
+const AISLE_PREVIEW: Product[] = Array.from({ length: 24 }, (_, i) => productAt(i));
 
 const STAGGER = 70;
 
@@ -40,7 +46,12 @@ export default function ShopScreen() {
   };
 
   const onCategory = (category: Category) => {
-    goToSearch(category);
+    if (category !== "All" && (AISLE_CATS as readonly string[]).includes(category)) {
+      if (Platform.OS !== "web") void Haptics.selectionAsync();
+      router.push({ pathname: "/aisle", params: { category } });
+    } else {
+      goToSearch(category);
+    }
   };
 
   const savedLabel = state.totalSaved > 0 ? `${usd(state.totalSaved)} saved` : "$0 saved";
@@ -116,6 +127,37 @@ export default function ShopScreen() {
           <SectionHeader title="For you" onSeeAll={() => goToSearch()} />
           <Grid products={forYou} />
         </Reveal>
+
+        {/* Endless aisle preview — 24-item 2-col static grid + link */}
+        <Reveal delay={nextDelay()}>
+          <View style={styles.sectionHeader}>
+            <View>
+              <Text style={styles.sectionTitle}>the endless aisle</Text>
+              <Text style={styles.aisleSubtitle}>5,000 things you don't need</Text>
+            </View>
+            <Pressable
+              onPress={() => router.push("/aisle")}
+              hitSlop={8}
+              style={styles.seeAll}
+              accessibilityRole="button"
+              accessibilityLabel="Keep browsing the endless aisle"
+            >
+              <Text style={styles.seeAllText}>keep browsing</Text>
+              <Ionicons name="chevron-forward" size={14} color={tokens.colors.muted} />
+            </Pressable>
+          </View>
+          <Grid products={AISLE_PREVIEW} />
+        </Reveal>
+
+        {/* Keep browsing link */}
+        <Pressable
+          onPress={() => router.push("/aisle")}
+          style={styles.keepBrowsing}
+          accessibilityRole="button"
+          accessibilityLabel="Keep browsing the endless aisle"
+        >
+          <Text style={styles.keepBrowsingText}>keep browsing →</Text>
+        </Pressable>
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>You've reached the end. Buy nothing. Save everything.</Text>
@@ -249,6 +291,30 @@ const styles = StyleSheet.create({
   },
   gridSpacer: {
     flex: 1,
+  },
+  aisleSubtitle: {
+    fontSize: 12.5,
+    fontWeight: "500",
+    color: tokens.colors.muted,
+    marginTop: 2,
+  },
+  keepBrowsing: {
+    alignSelf: "center",
+    marginTop: tokens.space.xl,
+    marginBottom: tokens.space.sm,
+    paddingHorizontal: tokens.space.xl,
+    paddingVertical: tokens.space.md,
+    borderRadius: tokens.radius.pill,
+    backgroundColor: tokens.colors.surface,
+    borderWidth: 1,
+    borderColor: tokens.colors.hairline,
+    ...tokens.shadow.card,
+  },
+  keepBrowsingText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: tokens.colors.ink,
+    letterSpacing: -0.2,
   },
   footer: {
     paddingHorizontal: tokens.space.xl,
