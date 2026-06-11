@@ -18,6 +18,13 @@ describe("formatWeight", () => {
     expect(formatWeight(11.4)).toBe("11 lb");
     expect(formatWeight(0.4)).toBe("0.4 lb");
   });
+
+  it("drops trailing zeros and handles the 10 boundary", () => {
+    expect(formatWeight(8)).toBe("8 lb");
+    expect(formatWeight(10)).toBe("10 lb");
+    expect(formatWeight(9.95)).toBe("10 lb");
+    expect(formatWeight(10.4)).toBe("10 lb");
+  });
 });
 
 describe("cartWeight", () => {
