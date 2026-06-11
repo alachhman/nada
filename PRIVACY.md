@@ -29,6 +29,30 @@ ever requested, entered, or processed.
 nada does not knowingly collect data from anyone, including children, because it does
 not collect data from anyone.
 
+## Optional anonymous presence sharing
+
+This feature is **off by default** and must be explicitly opted into by the user.
+
+If you opt in, exactly four facts leave your device per save event and are written to a
+shared feed:
+
+1. **Ritual type** — which nada ritual was completed (e.g. shopping, food, doomscroll, smoke break).
+2. **Rounded dollar amount** — your intercepted amount, rounded to the nearest whole dollar.
+3. **Region word** — a coarse region label (e.g. "Northeast", "Pacific") derived entirely from
+   your device's selected timezone. GPS is never accessed. Your IP address is never retained or
+   logged by nada's server.
+4. **Timestamp** — the server time at which the event was received.
+
+No user identifiers, device identifiers, account IDs, or any other linkable information are
+transmitted or stored. There is no way to associate a feed entry with a specific person or
+device.
+
+Turning the feature off in Settings immediately stops all sharing — no further data leaves your
+phone from that point forward.
+
+The App Store privacy nutrition label for nada will be updated to reflect this data type from
+the version in which the feature ships enabled (v1.1).
+
 ## Changes
 
 If this policy ever changes (for example, if optional sync is added someday), the new

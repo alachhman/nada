@@ -39,6 +39,7 @@ step-by-step runbook (`npm run build:ios` → `npm run submit:ios`). Privacy pol
 - **Smoke break ritual** (launched from the You tab): `app/break/` — a timed, guided-breathing break ("all of the break, none of the cigarette"), tracked as breaks taken + time away in `components/providers/BreakProvider.tsx` (`lib/breaks.ts`), with a calm completion. Completes the four-ritual set.
 - **Nothing-tracker** (`app/nothing/[ts].tsx`, `lib/nothing.ts`): every save is trackable — "Order intercepted → Your nothing has shipped → Delivered: nothing", advancing on wall-clock time, with the courier map carrying nothing to your door and a native share. Saves also count **things kept out of your house** (`SaveEntry.itemCount`).
 - **why this works** (`app/why.tsx`): the honest open-simulator explanation, linked from the You hub.
+- **anonymous co-presence feed** (flag-dark, ships enabled in v1.1): opt-in live ticker — "someone in Chicago just intercepted $84" — four anonymous facts per save (ritual, rounded amount, region word from timezone, timestamp); no IDs, no accounts; off by default.
 - `components/ui/Reveal.tsx` — web-reliable entrance primitive (Reanimated `useEffect`-driven) used app-wide for mount/stagger animations.
 
 ## Design
