@@ -277,11 +277,11 @@ function productName(catIndex: number, cat: string): string {
   const mat  = materials[matIdx];
   const noun = nouns[nounIdx];
 
-  // Vary composition order slightly based on catIndex to avoid sounding template-y.
-  // Use a small deterministic rotation — every 4th product uses material+noun,
-  // every 3rd uses adj+noun, otherwise adj+material+noun.
-  // Always use all three parts so the name uniquely identifies the (adj,mat,noun) triple.
-  // Vary order to avoid the template-y feel.
+  // Always use all three parts: the (adj, mat, noun) triple is what guarantees
+  // name uniqueness within a category cycle, and adjective/material vocabularies
+  // are disjoint, so the two word orders below can never collide with each other.
+  // (Do NOT add a two-word adj+noun form — dropping the material makes indices
+  // 66 apart collide: same adj, same noun, different mat.)
   const variant = catIndex % 4;
   if (variant === 1) {
     return `${mat} ${adj} ${noun}`;
