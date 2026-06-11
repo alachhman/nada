@@ -92,13 +92,15 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
           .select("id, created_at, ritual, amount, region")
           .order("created_at", { ascending: false })
           .limit(50);
-        if (!cancelled && eventsData) {
+        if (cancelled) return;
+        if (eventsData) {
           setEvents(eventsData as PresenceEvent[]);
         }
 
         // Today's aggregate stats.
         const { data: statsData } = await supabase.rpc("today_stats");
-        if (!cancelled && statsData && statsData.length > 0) {
+        if (cancelled) return;
+        if (statsData && statsData.length > 0) {
           const { cnt, total } = statsData[0];
           setTodayStats({ count: Number(cnt), total: Number(total) });
         }
@@ -121,11 +123,20 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
                       count: prev.count + 1,
                       total: prev.total + (typeof newEvent.amount === "number" ? newEvent.amount : 0),
                     }
-                  : prev,
+                  : { count: 1, total: typeof newEvent.amount === "number" ? newEvent.amount : 0 },
               );
             },
           )
           .subscribe();
+        if (cancelled) {
+          try {
+            channel.unsubscribe();
+          } catch {
+            /* ignore */
+          }
+          channel = null;
+          return;
+        }
       } catch {
         /* backend down — quiet ticker, no errors surfaced */
       }
@@ -144,6 +155,9 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
   }, [live]);
 
   function setEnabled(on: boolean) {
+    // Synchronously update liveRef so post() opt-out is instantaneous,
+    // without waiting for the next render cycle.
+    liveRef.current = on && PRESENCE_ENABLED;
     setEnabledState(on);
   }
 
