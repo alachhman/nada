@@ -36,7 +36,8 @@
         "ascApiKeyIssuerId": "eff59723-4acf-488a-992d-1bb68bfafb28",
         "appleTeamId": "9H2BW5FLRV",
         "sku": "nada-ios-001",
-        "language": "en-US"
+        "language": "en-US",
+        "ascAppId": "6779236515"
       }
     }
   }
