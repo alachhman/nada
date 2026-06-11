@@ -24,6 +24,7 @@ export default function ProductScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const product = getProduct(id ?? "");
+  const hrs = product ? hoursOfWork(product.price) : 0;
 
   if (!product) {
     return (
@@ -113,7 +114,7 @@ export default function ProductScreen() {
           {/* Dodge metrics */}
           <View style={styles.dodgeBlock}>
             <Text style={styles.dodgeLine}>⚖ {formatWeight(product.weightLb)} of future clutter</Text>
-            <Text style={styles.dodgeLine}>≈ {hoursOfWork(product.price)} hrs of work at ${WORK_WAGE}/hr</Text>
+            <Text style={styles.dodgeLine}>≈ {hrs} {hrs === 1 ? "hr" : "hrs"} of work at ${WORK_WAGE}/hr</Text>
             <Text style={styles.dodgeLine}>{product.dodgeLine}</Text>
           </View>
 
