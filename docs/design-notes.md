@@ -51,3 +51,13 @@ screenshots can't. Native-fidelity spot checks deferred to the next simulator bu
   exit in a future pass.
 - Foam-roller/apparel imagery is adjacent-not-exact (person stretching, hoodie for all
   garment nouns) — acceptable stock-photo realism; revisit if/when illustrated art lands.
+
+### Steering round (Anthony): "the entire app LOOKS fake"
+
+Diagnosis: photographic monotony — ~20 photos tiled across 5,000 products, half only
+"adjacent" to their noun. Fix: harvested ~1,150 distinct Unsplash photo IDs (12 per noun,
+search-relevance + visual spot-verification) via `scripts/design-pass/harvest-images.mjs`
+through a real browser session (Unsplash's napi blocks curl and headless Chromium).
+Curated IDs stay first in each pool. After: every aisle/search cell shows a distinct,
+correct product photo. Intent: repetition is survivable, mismatch is fatal — but variety
+is what makes the illusion hold at scroll speed.
