@@ -15,7 +15,8 @@ export function BreaksBlock() {
   return (
     <View style={styles.card}>
       <Text style={styles.heading}>BREAKS</Text>
-      <Text style={styles.count}>{breaksTaken} taken</Text>
+      <Text style={styles.count}>{breaksTaken}</Text>
+      <Text style={styles.taken}>taken</Text>
       <Text style={styles.sub}>{sub}</Text>
     </View>
   );
@@ -47,6 +48,12 @@ const styles = StyleSheet.create({
     color: tokens.colors.positive,
     letterSpacing: -1,
     lineHeight: 48,
+  },
+  taken: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: tokens.colors.muted,
+    textAlign: "center",
   },
   sub: {
     fontSize: 13,

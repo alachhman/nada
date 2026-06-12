@@ -11,16 +11,12 @@ import { BreathingCircle } from "@/components/break/BreathingCircle";
 import { BreakComplete } from "@/components/break/BreakComplete";
 import { useBreaks } from "@/components/providers/BreakProvider";
 import { usePresence } from "@/components/providers/PresenceProvider";
+import { PRESENCE_ENABLED } from "@/lib/flags";
 
 type Phase = "setup" | "breaking" | "done";
 
 const DURATIONS = [1, 3, 5] as const;
 const MIN_COUNTABLE_SECONDS = 30;
-
-function presenceCount(minutes: number): number {
-  // Deterministic, inert theater — no network, no real users.
-  return 2 + (minutes % 3);
-}
 
 function formatClock(totalSeconds: number): string {
   const s = Math.max(0, Math.round(totalSeconds));
@@ -32,7 +28,7 @@ function formatClock(totalSeconds: number): string {
 export default function BreakScreen() {
   const router = useRouter();
   const { recordBreak } = useBreaks();
-  const { post } = usePresence();
+  const { enabled, events, post } = usePresence();
 
   const [phase, setPhase] = useState<Phase>("setup");
   const [minutes, setMinutes] = useState<number>(3);
@@ -97,7 +93,16 @@ export default function BreakScreen() {
     }
   };
 
-  const presence = presenceCount(minutes);
+  const recentBreaks =
+    PRESENCE_ENABLED && enabled
+      ? events
+          .filter(
+            (e) =>
+              e.ritual === "break" &&
+              Date.now() - new Date(e.created_at).getTime() < 60 * 60_000,
+          )
+          .length
+      : 0;
 
   if (phase === "done") {
     return (
@@ -120,9 +125,11 @@ export default function BreakScreen() {
             <BreathingCircle running />
           </View>
 
-          <Text style={styles.presenceSmall}>
-            {presence} others are on a break right now
-          </Text>
+          {recentBreaks > 0 && (
+            <Text style={styles.presenceSmall}>
+              {recentBreaks} real break{recentBreaks === 1 ? "" : "s"} taken in the last hour
+            </Text>
+          )}
         </View>
 
         <Pressable
@@ -183,9 +190,13 @@ export default function BreakScreen() {
           })}
         </Reveal>
 
-        <Reveal delay={220}>
-          <Text style={styles.presence}>{presence} others are on a break right now</Text>
-        </Reveal>
+        {recentBreaks > 0 && (
+          <Reveal delay={220}>
+            <Text style={styles.presence}>
+              {recentBreaks} real break{recentBreaks === 1 ? "" : "s"} taken in the last hour
+            </Text>
+          </Reveal>
+        )}
 
         <Reveal delay={300} style={styles.cta}>
           <PillButton label="Step out" onPress={stepOut} variant="solid" style={styles.ctaButton} />

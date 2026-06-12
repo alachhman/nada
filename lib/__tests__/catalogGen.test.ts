@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { TOTAL_GENERATED, productAt } from "@/lib/catalogGen";
+import { TOTAL_GENERATED, productAt, CURATED_IDS, WEIGHT_BY_NOUN } from "@/lib/catalogGen";
 import { getProduct } from "@/lib/catalog";
 
 const CATS = ["Apparel", "Home", "Tech", "Kitchen", "Fitness"];
@@ -45,4 +45,50 @@ describe("productAt", () => {
     }
   });
   it("TOTAL_GENERATED is 5000", () => expect(TOTAL_GENERATED).toBe(5000));
+
+  // ── Fix 1: noun-aware images ─────────────────────────────────────────────
+  it("every image ID in a 300-index sample is from the curated-23 set", () => {
+    for (let i = 0; i < 300; i++) {
+      const p = productAt(i);
+      // Extract photo ID from the full URL (between the last "/" and "?")
+      const match = p.image.match(/\/(photo-[^?]+)\?/);
+      expect(match, `product ${i} image has unexpected URL shape: ${p.image}`).not.toBeNull();
+      const photoId = match![1];
+      expect(
+        CURATED_IDS.has(photoId),
+        `product ${i} ("${p.name}") image "${photoId}" is not in the curated-23 set`,
+      ).toBe(true);
+    }
+  });
+
+  // ── Fix 2: noun-aware weights ────────────────────────────────────────────
+  it("weight respects noun override — Earbuds (Tech, index 2)", () => {
+    // index 2 → cat Tech, catIndex 0 → nounIdx 0 → "Earbuds"
+    const p = productAt(2);
+    expect(p.name).toMatch(/Earbuds/);
+    const [lo, hi] = WEIGHT_BY_NOUN["Earbuds"];
+    expect(p.weightLb).toBeGreaterThanOrEqual(lo);
+    expect(p.weightLb).toBeLessThanOrEqual(hi);
+  });
+
+  it("weight respects noun override — Dumbbells (Fitness, index 6604)", () => {
+    // index 6604 → cat Fitness (6604 % 5 = 4), catIndex 1320
+    // nounIdx = floor(1320 / 220) % 20 = 6 → "Dumbbells"
+    const p = productAt(6604);
+    expect(p.name).toMatch(/Dumbbells/);
+    const [lo, hi] = WEIGHT_BY_NOUN["Dumbbells"];
+    expect(p.weightLb).toBeGreaterThanOrEqual(lo);
+    expect(p.weightLb).toBeLessThanOrEqual(hi);
+  });
+
+  // ── Determinism (extended) ───────────────────────────────────────────────
+  it("determinism holds for image and weightLb fields", () => {
+    expect(productAt(100).image).toBe(productAt(100).image);
+    expect(productAt(999).weightLb).toBe(productAt(999).weightLb);
+    // Two calls with different indices should not collide on image+weight
+    const a = productAt(2);
+    const b = productAt(2);
+    expect(a.image).toBe(b.image);
+    expect(a.weightLb).toBe(b.weightLb);
+  });
 });

@@ -41,7 +41,7 @@ export default function RestaurantsScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scroll}
       >
-        {/* Header */}
+        {/* Header — left-padded to clear the absolute back button (40px wide + xl left offset) */}
         <Reveal delay={60} style={styles.header}>
           <Text style={styles.title}>Order in</Text>
           <Text style={styles.subtitle}>Browse. Order. Don't pay. Obviously.</Text>
@@ -88,6 +88,8 @@ const styles = StyleSheet.create({
     marginTop: tokens.space.xxxl,
     marginBottom: tokens.space.xl,
     gap: tokens.space.xs,
+    // Indent enough to clear the back button: 40px button + xl(20) left + sm(8) gap
+    paddingLeft: 68,
   },
   title: {
     fontSize: 34,

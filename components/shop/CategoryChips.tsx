@@ -43,7 +43,8 @@ export function CategoryChips({ selected, onSelect }: CategoryChipsProps) {
 
 const styles = StyleSheet.create({
   content: {
-    paddingHorizontal: tokens.space.xl,
+    paddingLeft: tokens.space.xl,
+    paddingRight: tokens.space.xl * 2,
     gap: tokens.space.sm,
   },
   chip: {
