@@ -113,7 +113,7 @@ export default function ProductScreen() {
 
           {/* Dodge metrics */}
           <View style={styles.dodgeBlock}>
-            <Text style={styles.dodgeLine}>⚖ {formatWeight(product.weightLb)} of future clutter</Text>
+            <Text style={styles.dodgeLine}>{formatWeight(product.weightLb)} of future clutter</Text>
             <Text style={styles.dodgeLine}>≈ {hrs} {hrs === 1 ? "hr" : "hrs"} of work at ${WORK_WAGE}/hr</Text>
             <Text style={styles.dodgeLine}>{product.dodgeLine}</Text>
           </View>
