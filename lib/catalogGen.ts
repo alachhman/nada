@@ -48,99 +48,127 @@ function img(id: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Image pools — ONLY IDs that exist in lib/catalog.ts or lib/feed.ts
-// Per category: 12–18 IDs, mapped sensibly.
+// Curated photo IDs — the 23 product-shot images from lib/catalog.ts.
+// Each ID depicts a specific object; only these IDs are used for product
+// imagery (no art / social / nature / lifestyle pool photos).
+// Note: photo-1593618998160-e34014e67546 (labelled "cast-skillet") actually
+// depicts a knife set — it is mapped as a knives/kitchen-tools image.
 // ---------------------------------------------------------------------------
 
-const IMAGE_POOLS: Record<string, string[]> = {
-  Apparel: [
-    // catalog.ts curated
-    "photo-1560769629-975ec94e6a86", // sneakers
-    "photo-1556821840-3a63f95609a7", // hoodie
-    "photo-1591561954557-26941169b49e", // leather tote
-    "photo-1511499767150-a48a237f0083", // sunglasses
-    "photo-1553062407-98eeb64c6a62", // weekender bag
-    // feed.ts art pool — clean textures, fabric-like
-    "photo-1541367777708-7905fe3296c0",
-    "photo-1547826039-bfc35e0f1ea8",
-    "photo-1578662996442-48f60103fc96",
-    "photo-1561214115-f2f134cc4912",
-    "photo-1549490349-8643362247b5",
-    "photo-1523405045-d639bc206f87",
-    "photo-1578926288207-a90a103f9f5e",
-    // feed.ts social images (lifestyle / wearable context)
-    "photo-1513519245088-0e12902e35ca",
-    "photo-1558618666-fcd25c85cd64",
-  ],
-  Home: [
-    // catalog.ts curated
-    "photo-1507473885765-e6ed057f782c", // arc lamp
-    "photo-1514228742587-6b1558fcca3d", // stoneware mug
-    "photo-1614594975525-e45190c55d0b", // monstera
-    "photo-1580301762395-83604792a36c", // chunky knit throw
-    "photo-1602874801006-e26c4c5b5b8a", // candle
-    // feed.ts cozy pool — home scenes
-    "photo-1507003211169-0a1dd7228f2d",
-    "photo-1544148103-0773bf10d330",
-    "photo-1489710437720-ebb67ec84dd2",
-    "photo-1512389142860-9c449e58a543",
-    "photo-1481391243133-f96216dcb5d2",
-    "photo-1558618047-3c8c76ca7d13",
-    "photo-1616046229478-9901c5536a45",
-    "photo-1600585154340-be6161a56a0c",
-  ],
-  Tech: [
-    // catalog.ts curated
-    "photo-1606220588913-b3aacb4d2f46", // earbuds
-    "photo-1587829741301-dc798b83add3", // keyboard
-    "photo-1523275335684-37898b6baf30", // smartwatch
-    "photo-1496181133206-80ce9b88a853", // instant camera
-    "photo-1527443224154-c4a3942d3acf", // desk mat
-    // feed.ts skies pool — clean, minimal, good for tech backgrounds
-    "photo-1470770841072-f978cf4d019e",
-    "photo-1500534314209-a25ddb2bd429",
-    "photo-1510784722466-f2aa240c4b28",
-    "photo-1469474968028-56623f02e42e",
-    "photo-1504608524841-42584120d693",
-    "photo-1534088568595-a066f410bcda",
-    "photo-1502082553048-f009c37129b9",
-    "photo-1444927714506-8492d94b5ba0",
-  ],
-  Kitchen: [
-    // catalog.ts curated
-    "photo-1593618998160-e34014e67546", // cast iron skillet
-    "photo-1495474472287-4d71bcdd2085", // pour-over coffee
-    "photo-1566454825481-9c31a3f8d8b2", // chef knife
-    "photo-1570222094114-d054a817e56b", // blender
-    // feed.ts food pool — directly relevant
-    "photo-1490645935967-10de6ba17061",
-    "photo-1504674900247-0877df9cc836",
-    "photo-1498837167922-ddd27525d352",
-    "photo-1467003909585-2f8a72700288", // coffee
-    "photo-1476224203421-9ac39bcb3b28",
-    "photo-1512621776951-a57141f2eefd",
-    "photo-1482049016688-2d3e1b311543",
-    "photo-1540189549336-e6e99c3679fe",
-  ],
-  Fitness: [
-    // catalog.ts curated
-    "photo-1592432678016-e910b452f9a2", // yoga mat
-    "photo-1517836357463-d25dfeac3438", // dumbbells
-    "photo-1483721310020-03333e577078", // running shorts
-    "photo-1571019613454-1cb2f99b2d8b", // foam roller
-    // feed.ts nature pool — outdoors, movement context
-    "photo-1506905925346-21bda4d32df4",
-    "photo-1501854140801-50d01698950b",
-    "photo-1476514525535-07fb3b4ae5f1",
-    "photo-1518173946687-a4c8892bbd9f",
-    "photo-1426604966848-d7adac402bff",
-    "photo-1465146344425-f00d5f5c8f07",
-    "photo-1523712999610-f77fbcfc3843",
-    "photo-1414609245224-aea2814fe2ad",
-    // feed.ts social outdoor images
-    "photo-1441974231531-c6227db76b6e",
-    "photo-1416879595882-3373a0480b5b",
-  ],
+// IMAGE_BY_NOUN maps each generator noun to 1–3 curated IDs of matching or
+// adjacent objects.  productAt picks deterministically from the noun's list.
+// Heavy reuse across products is accepted and intended.
+const IMAGE_BY_NOUN: Record<string, string[]> = {
+  // ── Apparel ──────────────────────────────────────────────────────────────
+  Overshirt:         ["photo-1556821840-3a63f95609a7"],                          // hoodie
+  Hoodie:            ["photo-1556821840-3a63f95609a7"],                          // hoodie
+  Tote:              ["photo-1591561954557-26941169b49e", "photo-1553062407-98eeb64c6a62"], // leather-tote, weekender
+  Sneakers:          ["photo-1560769629-975ec94e6a86"],                          // retro-runner
+  Loafers:           ["photo-1560769629-975ec94e6a86"],                          // sneakers (closest footwear)
+  Cardigan:          ["photo-1556821840-3a63f95609a7"],                          // hoodie
+  Blazer:            ["photo-1556821840-3a63f95609a7"],                          // hoodie
+  Joggers:           ["photo-1483721310020-03333e577078"],                       // running shorts
+  Trousers:          ["photo-1483721310020-03333e577078"],                       // running shorts
+  Shorts:            ["photo-1483721310020-03333e577078"],                       // running shorts
+  Vest:              ["photo-1556821840-3a63f95609a7"],                          // hoodie
+  Windbreaker:       ["photo-1556821840-3a63f95609a7"],                          // hoodie
+  Bomber:            ["photo-1556821840-3a63f95609a7"],                          // hoodie
+  Dress:             ["photo-1556821840-3a63f95609a7"],                          // hoodie (closest garment)
+  Jumpsuit:          ["photo-1556821840-3a63f95609a7"],                          // hoodie
+  Camisole:          ["photo-1556821840-3a63f95609a7"],                          // hoodie
+  Parka:             ["photo-1556821840-3a63f95609a7"],                          // hoodie
+  Trench:            ["photo-1556821840-3a63f95609a7"],                          // hoodie
+  Beanie:            ["photo-1556821840-3a63f95609a7"],                          // hoodie (closest apparel)
+  Cap:               ["photo-1560769629-975ec94e6a86"],                          // sneakers (sporty accessory)
+
+  // ── Home ─────────────────────────────────────────────────────────────────
+  "Floor Lamp":      ["photo-1507473885765-e6ed057f782c"],                       // arc lamp
+  Shelf:             ["photo-1507473885765-e6ed057f782c"],                       // arc lamp (closest furniture)
+  Vase:              ["photo-1514228742587-6b1558fcca3d"],                       // stoneware mug (ceramic vessel)
+  Throw:             ["photo-1580301762395-83604792a36c"],                       // chunky knit throw
+  Candle:            ["photo-1602874801006-e26c4c5b5b8a"],                       // scented candle
+  Mirror:            ["photo-1507473885765-e6ed057f782c"],                       // arc lamp (reflective home piece)
+  Rug:               ["photo-1580301762395-83604792a36c"],                       // throw blanket (textile, floor)
+  Planter:           ["photo-1614594975525-e45190c55d0b"],                       // monstera
+  Clock:             ["photo-1507473885765-e6ed057f782c"],                       // arc lamp (home decor)
+  Frame:             ["photo-1614594975525-e45190c55d0b"],                       // monstera (decorative home object)
+  Tray:              ["photo-1514228742587-6b1558fcca3d"],                       // stoneware mug (ceramic/surface)
+  Basket:            ["photo-1580301762395-83604792a36c"],                       // throw blanket (woven textile)
+  Stool:             ["photo-1507473885765-e6ed057f782c"],                       // arc lamp (furniture)
+  Ottoman:           ["photo-1580301762395-83604792a36c"],                       // throw blanket (upholstered)
+  Cushion:           ["photo-1580301762395-83604792a36c"],                       // throw blanket
+  Diffuser:          ["photo-1602874801006-e26c4c5b5b8a"],                       // candle (scent device)
+  Bookend:           ["photo-1507473885765-e6ed057f782c"],                       // arc lamp (desk object)
+  "Side Table":      ["photo-1507473885765-e6ed057f782c"],                       // arc lamp (furniture)
+  "Wall Hook":       ["photo-1507473885765-e6ed057f782c"],                       // arc lamp (closest home hardware)
+  "Storage Box":     ["photo-1580301762395-83604792a36c"],                       // throw blanket (closest home storage)
+
+  // ── Tech ─────────────────────────────────────────────────────────────────
+  Earbuds:           ["photo-1606220588913-b3aacb4d2f46"],                       // noise-buds
+  Keyboard:          ["photo-1587829741301-dc798b83add3"],                       // mech-keyboard
+  Trackpad:          ["photo-1587829741301-dc798b83add3"],                       // keyboard (closest input device)
+  Webcam:            ["photo-1496181133206-80ce9b88a853"],                       // instant camera
+  "Monitor Light":   ["photo-1527443224154-c4a3942d3acf"],                       // desk mat (desk accessory)
+  "USB Hub":         ["photo-1587829741301-dc798b83add3"],                       // keyboard (desk peripheral)
+  "Cable Organizer": ["photo-1527443224154-c4a3942d3acf"],                       // desk mat (desk organization)
+  "Desk Mat":        ["photo-1527443224154-c4a3942d3acf"],                       // desk mat
+  Stand:             ["photo-1527443224154-c4a3942d3acf"],                       // desk mat (desk accessory)
+  "Power Bank":      ["photo-1606220588913-b3aacb4d2f46"],                       // earbuds (portable tech)
+  Stylus:            ["photo-1587829741301-dc798b83add3"],                       // keyboard (input device)
+  Headphones:        ["photo-1606220588913-b3aacb4d2f46"],                       // earbuds
+  Speaker:           ["photo-1606220588913-b3aacb4d2f46"],                       // earbuds (audio device)
+  Adapter:           ["photo-1587829741301-dc798b83add3"],                       // keyboard (peripheral)
+  "Charging Dock":   ["photo-1523275335684-37898b6baf30"],                       // smartwatch (charging)
+  Camera:            ["photo-1496181133206-80ce9b88a853"],                       // instant camera
+  Mouse:             ["photo-1587829741301-dc798b83add3"],                       // keyboard (input device)
+  "Wrist Rest":      ["photo-1527443224154-c4a3942d3acf"],                       // desk mat
+  "Laptop Sleeve":   ["photo-1527443224154-c4a3942d3acf"],                       // desk mat (protective sleeve)
+  Smartwatch:        ["photo-1523275335684-37898b6baf30"],                       // smart-watch
+
+  // ── Kitchen ──────────────────────────────────────────────────────────────
+  Skillet:           ["photo-1593618998160-e34014e67546", "photo-1566454825481-9c31a3f8d8b2"], // knife-set img, chef-knife
+  "Dutch Oven":      ["photo-1593618998160-e34014e67546"],                       // knife-set img (cast kitchen)
+  "Cutting Board":   ["photo-1566454825481-9c31a3f8d8b2"],                       // chef knife
+  Knife:             ["photo-1566454825481-9c31a3f8d8b2", "photo-1593618998160-e34014e67546"], // chef-knife, knife-set
+  Colander:          ["photo-1570222094114-d054a817e56b"],                       // blender (kitchen appliance)
+  "Mixing Bowl":     ["photo-1570222094114-d054a817e56b"],                       // blender (kitchen vessel)
+  Grater:            ["photo-1566454825481-9c31a3f8d8b2"],                       // chef knife (kitchen blade tool)
+  "Pour-Over":       ["photo-1495474472287-4d71bcdd2085"],                       // pour-over coffee
+  "French Press":    ["photo-1495474472287-4d71bcdd2085"],                       // pour-over coffee (coffee brewer)
+  Mortar:            ["photo-1570222094114-d054a817e56b"],                       // blender (grinding/prep)
+  Saucepan:          ["photo-1593618998160-e34014e67546"],                       // knife-set img (cookware)
+  Wok:               ["photo-1593618998160-e34014e67546"],                       // knife-set img (cookware)
+  "Baking Sheet":    ["photo-1593618998160-e34014e67546"],                       // knife-set img (cookware)
+  Spatula:           ["photo-1566454825481-9c31a3f8d8b2"],                       // chef knife (kitchen tool)
+  Whisk:             ["photo-1566454825481-9c31a3f8d8b2"],                       // chef knife (kitchen tool)
+  Carafe:            ["photo-1495474472287-4d71bcdd2085"],                       // pour-over (vessel for liquid)
+  "Spice Rack":      ["photo-1570222094114-d054a817e56b"],                       // blender (kitchen storage)
+  "Salad Bowl":      ["photo-1570222094114-d054a817e56b"],                       // blender (kitchen vessel)
+  Strainer:          ["photo-1566454825481-9c31a3f8d8b2"],                       // chef knife (kitchen tool)
+  Kettle:            ["photo-1495474472287-4d71bcdd2085"],                       // pour-over (hot water device)
+
+  // ── Fitness ──────────────────────────────────────────────────────────────
+  "Foam Roller":     ["photo-1571019613454-1cb2f99b2d8b"],                       // foam roller
+  "Resistance Band": ["photo-1592432678016-e910b452f9a2"],                       // yoga mat (stretching)
+  "Yoga Block":      ["photo-1592432678016-e910b452f9a2"],                       // yoga mat
+  "Pull-Up Bar":     ["photo-1517836357463-d25dfeac3438"],                       // dumbbells (strength equipment)
+  "Jump Rope":       ["photo-1483721310020-03333e577078"],                       // running shorts (cardio)
+  Kettlebell:        ["photo-1517836357463-d25dfeac3438"],                       // dumbbells (weight)
+  Dumbbells:         ["photo-1517836357463-d25dfeac3438"],                       // dumbbell-set
+  Mat:               ["photo-1592432678016-e910b452f9a2"],                       // yoga mat
+  Gliders:           ["photo-1592432678016-e910b452f9a2"],                       // yoga mat (floor exercise)
+  "Massage Ball":    ["photo-1571019613454-1cb2f99b2d8b"],                       // foam roller (recovery)
+  "Ankle Weights":   ["photo-1517836357463-d25dfeac3438"],                       // dumbbells (weights)
+  "Ab Wheel":        ["photo-1571019613454-1cb2f99b2d8b"],                       // foam roller (core)
+  "Stability Ball":  ["photo-1592432678016-e910b452f9a2"],                       // yoga mat (balance)
+  "Grip Strengthener": ["photo-1517836357463-d25dfeac3438"],                     // dumbbells (hand strength)
+  // Shorts is also an Apparel noun but appears in Fitness bank:
+  // "Shorts" key already set above under Apparel — Fitness "Shorts" => running-shorts
+  "Sports Bra":      ["photo-1483721310020-03333e577078"],                       // running shorts
+  "Tank Top":        ["photo-1483721310020-03333e577078"],                       // running shorts
+  "Compression Sleeve": ["photo-1483721310020-03333e577078"],                   // running shorts
+  "Water Bottle":    ["photo-1592432678016-e910b452f9a2"],                       // yoga mat (fitness accessory)
+  "Gym Bag":         ["photo-1591561954557-26941169b49e"],                       // leather-tote (bag)
 };
 
 // ---------------------------------------------------------------------------
@@ -290,6 +318,15 @@ function productName(catIndex: number, cat: string): string {
   }
 }
 
+/** Returns just the noun for a given catIndex + category (mirrors productName logic). */
+function productNoun(catIndex: number, cat: string): string {
+  const { nouns, adjectives, materials } = PARTS[cat];
+  const nA = adjectives.length;
+  const nM = materials.length;
+  const nounIdx = Math.floor(catIndex / (nA * nM)) % nouns.length;
+  return nouns[nounIdx];
+}
+
 // ---------------------------------------------------------------------------
 // Price bands (integer, inclusive)
 // ---------------------------------------------------------------------------
@@ -312,6 +349,118 @@ const WEIGHT_BANDS: Record<string, [number, number]> = {
   Tech:     [0.1, 12.0],
   Kitchen:  [0.5, 15.0],
   Fitness:  [0.5, 50.0],
+};
+
+// ---------------------------------------------------------------------------
+// Noun-aware weight overrides — each band MUST lie within the category band.
+// Fallback when noun is absent: category band.
+// ---------------------------------------------------------------------------
+
+export const WEIGHT_BY_NOUN: Record<string, [number, number]> = {
+  // Apparel
+  Overshirt:         [0.4, 1.0],
+  Hoodie:            [0.8, 1.8],
+  Tote:              [0.5, 2.5],
+  Sneakers:          [1.2, 3.0],
+  Loafers:           [0.8, 2.0],
+  Cardigan:          [0.4, 1.2],
+  Blazer:            [0.8, 2.0],
+  Joggers:           [0.3, 0.9],
+  Trousers:          [0.4, 1.2],
+  Shorts:            [0.2, 0.6],
+  Vest:              [0.3, 0.8],
+  Windbreaker:       [0.4, 1.0],
+  Bomber:            [0.8, 2.0],
+  Dress:             [0.3, 1.2],
+  Jumpsuit:          [0.5, 1.5],
+  Camisole:          [0.2, 0.5],
+  Parka:             [1.5, 4.0],
+  Trench:            [1.2, 3.5],
+  Beanie:            [0.2, 0.4],
+  Cap:               [0.2, 0.4],
+  // Home
+  "Floor Lamp":      [3.0, 12.0],
+  Shelf:             [3.0, 14.0],
+  Vase:              [0.5, 4.0],
+  Throw:             [1.5, 5.0],
+  Candle:            [0.5, 2.0],
+  Mirror:            [2.0, 12.0],
+  Rug:               [3.0, 18.0],
+  Planter:           [1.0, 8.0],
+  Clock:             [1.0, 6.0],
+  Frame:             [0.5, 3.0],
+  Tray:              [0.5, 3.0],
+  Basket:            [0.5, 4.0],
+  Stool:             [4.0, 14.0],
+  Ottoman:           [5.0, 18.0],
+  Cushion:           [0.5, 2.5],
+  Diffuser:          [0.5, 2.0],
+  Bookend:           [0.5, 4.0],
+  "Side Table":      [4.0, 16.0],
+  "Wall Hook":       [0.5, 2.0],
+  "Storage Box":     [0.5, 5.0],
+  // Tech
+  Earbuds:           [0.1, 0.4],
+  Keyboard:          [1.0, 3.0],
+  Trackpad:          [0.3, 1.0],
+  Webcam:            [0.3, 1.2],
+  "Monitor Light":   [0.3, 1.0],
+  "USB Hub":         [0.2, 0.8],
+  "Cable Organizer": [0.1, 0.5],
+  "Desk Mat":        [0.5, 2.0],
+  Stand:             [0.5, 3.0],
+  "Power Bank":      [0.3, 1.5],
+  Stylus:            [0.1, 0.3],
+  Headphones:        [0.3, 1.0],
+  Speaker:           [0.5, 4.0],
+  Adapter:           [0.1, 0.4],
+  "Charging Dock":   [0.3, 1.5],
+  Camera:            [0.5, 2.5],
+  Mouse:             [0.2, 0.8],
+  "Wrist Rest":      [0.3, 1.0],
+  "Laptop Sleeve":   [0.3, 1.2],
+  Smartwatch:        [0.1, 0.5],
+  // Kitchen
+  Skillet:           [4.0, 8.0],
+  "Dutch Oven":      [7.0, 15.0],
+  "Cutting Board":   [1.0, 5.0],
+  Knife:             [0.5, 1.5],
+  Colander:          [0.5, 2.0],
+  "Mixing Bowl":     [0.5, 3.0],
+  Grater:            [0.5, 1.5],
+  "Pour-Over":       [0.5, 2.0],
+  "French Press":    [1.0, 3.0],
+  Mortar:            [2.0, 6.0],
+  Saucepan:          [2.0, 6.0],
+  Wok:               [3.0, 8.0],
+  "Baking Sheet":    [1.0, 4.0],
+  Spatula:           [0.5, 1.0],
+  Whisk:             [0.5, 1.0],
+  Carafe:            [1.0, 3.0],
+  "Spice Rack":      [1.0, 5.0],
+  "Salad Bowl":      [1.0, 4.0],
+  Strainer:          [0.5, 2.0],
+  Kettle:            [2.0, 5.0],
+  // Fitness
+  "Foam Roller":     [1.0, 3.0],
+  "Resistance Band": [0.5, 1.5],
+  "Yoga Block":      [0.5, 1.5],
+  "Pull-Up Bar":     [3.0, 8.0],
+  "Jump Rope":       [0.5, 1.5],
+  Kettlebell:        [8.0, 50.0],
+  Dumbbells:         [15.0, 50.0],
+  Mat:               [2.0, 6.0],
+  Gliders:           [0.5, 1.5],
+  "Massage Ball":    [0.5, 2.0],
+  "Ankle Weights":   [2.0, 10.0],
+  "Ab Wheel":        [1.0, 3.0],
+  "Stability Ball":  [2.0, 5.0],
+  "Grip Strengthener": [0.5, 2.0],
+  "Sports Bra":      [0.2, 0.5],
+  "Tank Top":        [0.2, 0.5],
+  "Compression Sleeve": [0.5, 1.5],
+  "Water Bottle":    [0.5, 2.5],
+  "Gym Bag":         [1.5, 4.0],
 };
 
 // ---------------------------------------------------------------------------
@@ -457,6 +606,36 @@ const REVIEW_POOLS: Record<string, RawReview[]> = {
 };
 
 // ---------------------------------------------------------------------------
+// Curated ID set — exported so tests can assert image containment.
+// ---------------------------------------------------------------------------
+
+export const CURATED_IDS: ReadonlySet<string> = new Set([
+  "photo-1560769629-975ec94e6a86", // sneakers
+  "photo-1556821840-3a63f95609a7", // hoodie
+  "photo-1507473885765-e6ed057f782c", // arc lamp
+  "photo-1514228742587-6b1558fcca3d", // stoneware mug
+  "photo-1606220588913-b3aacb4d2f46", // earbuds
+  "photo-1587829741301-dc798b83add3", // keyboard
+  "photo-1593618998160-e34014e67546", // knife set (labelled cast-skillet)
+  "photo-1495474472287-4d71bcdd2085", // pour-over coffee
+  "photo-1592432678016-e910b452f9a2", // yoga mat
+  "photo-1517836357463-d25dfeac3438", // dumbbells
+  "photo-1591561954557-26941169b49e", // leather tote
+  "photo-1511499767150-a48a237f0083", // sunglasses
+  "photo-1614594975525-e45190c55d0b", // monstera
+  "photo-1580301762395-83604792a36c", // chunky knit throw
+  "photo-1523275335684-37898b6baf30", // smartwatch
+  "photo-1496181133206-80ce9b88a853", // instant camera
+  "photo-1566454825481-9c31a3f8d8b2", // chef knife
+  "photo-1570222094114-d054a817e56b", // blender
+  "photo-1483721310020-03333e577078", // running shorts
+  "photo-1571019613454-1cb2f99b2d8b", // foam roller
+  "photo-1527443224154-c4a3942d3acf", // desk mat
+  "photo-1602874801006-e26c4c5b5b8a", // scented candle
+  "photo-1553062407-98eeb64c6a62", // weekender bag
+]);
+
+// ---------------------------------------------------------------------------
 // Ratings — {3.5, 4, 4.5, 5}
 // ---------------------------------------------------------------------------
 
@@ -480,8 +659,12 @@ export function productAt(index: number): Product {
   const [pLo, pHi] = PRICE_BANDS[cat];
   const price = hi(index, 1, pLo, pHi);
 
-  // Weight — 1 decimal in band
-  const [wLo, wHi] = WEIGHT_BANDS[cat];
+  // Noun — used for noun-aware image and weight
+  const noun = productNoun(catIndex, cat);
+
+  // Weight — noun-aware override band when available, else category band.
+  // Every override band lies within the category band (test-verified).
+  const [wLo, wHi] = WEIGHT_BY_NOUN[noun] ?? WEIGHT_BANDS[cat];
   const wRaw = wLo + h(index, 2) * (wHi - wLo);
   const weightLb = Math.round(wRaw * 10) / 10;
 
@@ -495,9 +678,11 @@ export function productAt(index: number): Product {
   // Dodge line
   const dodge = dodgeLine(index, cat);
 
-  // Image
-  const pool = IMAGE_POOLS[cat];
-  const imageId = pool[hi(index, 5, 0, pool.length - 1)];
+  // Image — noun-aware: pick from the noun's curated photo list.
+  // Falls back to the first image in the category's noun list for safety
+  // (all nouns are mapped, so this branch should never be reached).
+  const nounImages = IMAGE_BY_NOUN[noun] ?? IMAGE_BY_NOUN[PARTS[cat].nouns[0]];
+  const imageId = nounImages[Math.floor(h(index, 5) * nounImages.length)];
   const image = img(imageId);
 
   // Reviews — sample 1 or 2

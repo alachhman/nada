@@ -21,8 +21,34 @@ const RAIL_WIDTH = 168;
 const DEAL_THRESHOLD = 100;
 const BLURHASH = "L6Pj0^jE.AyE_3t7t7R**0o#DgR4";
 
-function dealBadge(price: number): { label: string; bg: string } | null {
-  if (price >= DEAL_THRESHOLD) {
+/**
+ * Deterministic hash of an id string to a float in [0, 1).
+ * Pure function of the string — same id always returns the same value.
+ * Uses djb2-style mixing followed by a mulberry32 avalanche step to
+ * ensure well-scattered output even for short, near-identical strings
+ * like "gen-0", "gen-1", "gen-2", …
+ */
+function idHash(id: string): number {
+  let seed = 0;
+  for (let i = 0; i < id.length; i++) {
+    seed = (Math.imul(seed, 31) + id.charCodeAt(i)) | 0;
+  }
+  // mulberry32 avalanche
+  let t = (seed + 0x6d2b79f5) | 0;
+  t = Math.imul(t ^ (t >>> 15), t | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+
+/**
+ * Returns a deal badge for the product, or null.
+ * Gate 1: price must meet the threshold.
+ * Gate 2: deterministic hash of the product id must fall in the bottom ~25%,
+ *         so roughly 1-in-4 eligible products shows a badge.
+ * Same product → same badge outcome every render (pure function of id).
+ */
+function dealBadge(price: number, id: string): { label: string; bg: string } | null {
+  if (price >= DEAL_THRESHOLD && idHash(id) < 0.25) {
     const pct = price >= 180 ? 30 : price >= 140 ? 25 : 20;
     return { label: `-${pct}%`, bg: tokens.colors.peach };
   }
@@ -42,7 +68,7 @@ export function ProductCard({ product, layout = "grid" }: ProductCardProps) {
     scale.value = withSpring(1, SPRING);
   };
 
-  const badge = dealBadge(product.price);
+  const badge = dealBadge(product.price, product.id);
 
   return (
     <Animated.View
