@@ -126,8 +126,8 @@ const IMAGE_BY_NOUN: Record<string, string[]> = {
   Smartwatch:        ["photo-1523275335684-37898b6baf30"],                       // smart-watch
 
   // ── Kitchen ──────────────────────────────────────────────────────────────
-  Skillet:           ["photo-1593618998160-e34014e67546", "photo-1566454825481-9c31a3f8d8b2"], // knife-set img, chef-knife
-  "Dutch Oven":      ["photo-1593618998160-e34014e67546"],                       // knife-set img (cast kitchen)
+  Skillet:           ["photo-1604908176997-125f25cc6f3d"],                       // cast-iron pan
+  "Dutch Oven":      ["photo-1604908176997-125f25cc6f3d"],                       // cast-iron pan (cookware)
   "Cutting Board":   ["photo-1566454825481-9c31a3f8d8b2"],                       // chef knife
   Knife:             ["photo-1566454825481-9c31a3f8d8b2", "photo-1593618998160-e34014e67546"], // chef-knife, knife-set
   Colander:          ["photo-1570222094114-d054a817e56b"],                       // blender (kitchen appliance)
@@ -136,9 +136,9 @@ const IMAGE_BY_NOUN: Record<string, string[]> = {
   "Pour-Over":       ["photo-1495474472287-4d71bcdd2085"],                       // pour-over coffee
   "French Press":    ["photo-1495474472287-4d71bcdd2085"],                       // pour-over coffee (coffee brewer)
   Mortar:            ["photo-1570222094114-d054a817e56b"],                       // blender (grinding/prep)
-  Saucepan:          ["photo-1593618998160-e34014e67546"],                       // knife-set img (cookware)
-  Wok:               ["photo-1593618998160-e34014e67546"],                       // knife-set img (cookware)
-  "Baking Sheet":    ["photo-1593618998160-e34014e67546"],                       // knife-set img (cookware)
+  Saucepan:          ["photo-1604908176997-125f25cc6f3d"],                       // cast-iron pan (cookware)
+  Wok:               ["photo-1604908176997-125f25cc6f3d"],                       // cast-iron pan (cookware)
+  "Baking Sheet":    ["photo-1604908176997-125f25cc6f3d"],                       // cast-iron pan (cookware)
   Spatula:           ["photo-1566454825481-9c31a3f8d8b2"],                       // chef knife (kitchen tool)
   Whisk:             ["photo-1566454825481-9c31a3f8d8b2"],                       // chef knife (kitchen tool)
   Carafe:            ["photo-1495474472287-4d71bcdd2085"],                       // pour-over (vessel for liquid)
@@ -616,7 +616,8 @@ export const CURATED_IDS: ReadonlySet<string> = new Set([
   "photo-1514228742587-6b1558fcca3d", // stoneware mug
   "photo-1606220588913-b3aacb4d2f46", // earbuds
   "photo-1587829741301-dc798b83add3", // keyboard
-  "photo-1593618998160-e34014e67546", // knife set (labelled cast-skillet)
+  "photo-1593618998160-e34014e67546", // knife set (kitchen tools)
+  "photo-1604908176997-125f25cc6f3d", // cast-iron pan, overhead (cast-skillet)
   "photo-1495474472287-4d71bcdd2085", // pour-over coffee
   "photo-1592432678016-e910b452f9a2", // yoga mat
   "photo-1517836357463-d25dfeac3438", // dumbbells

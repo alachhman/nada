@@ -96,7 +96,7 @@ export const CATALOG: Product[] = [
     name: "Cast Iron Skillet",
     category: "Kitchen",
     price: 39,
-    image: img("photo-1593618998160-e34014e67546"),
+    image: img("photo-1604908176997-125f25cc6f3d"),
     rating: 5,
     reviewCount: 3110,
     reviews: [
